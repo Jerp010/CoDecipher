@@ -1,0 +1,992 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CoDecipher - Unmask the Code</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #3e1257 0%, #5c1069 50%, #3e1257 100%);
+      min-height: 100vh;
+      overflow-x: hidden;
+      color: white;
+    }
+
+    /* Animated Particle Background */
+    .particle-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 1;
+    }
+
+    .particle {
+      position: absolute;
+      width: 2px;
+      height: 2px;
+      background: rgba(168, 85, 247, 0.3);
+      border-radius: 50%;
+      animation: float-particle 15s infinite ease-in-out;
+    }
+
+    @keyframes float-particle {
+      0% {
+        transform: translateY(0) translateX(0);
+        opacity: 0;
+      }
+      10% {
+        opacity: 1;
+      }
+      90% {
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(-100px) translateX(var(--drift));
+        opacity: 0;
+      }
+    }
+
+    /* Masked Code Snippets Background */
+    .code-snippet-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      overflow: hidden;
+      opacity: 0.2;
+      z-index: 1;
+    }
+
+    .code-snippet {
+      position: absolute;
+      font-family: 'Courier New', monospace;
+      font-size: 2rem;
+      font-weight: bold;
+      color: #f4e04d;
+      animation: float-code 8s infinite ease-in-out;
+    }
+
+    @keyframes float-code {
+      0%, 100% {
+        transform: translateY(0);
+        opacity: 0.2;
+      }
+      50% {
+        transform: translateY(-50px);
+        opacity: 0.5;
+      }
+    }
+
+    /* Main Container */
+    .hero-container {
+      position: relative;
+      z-index: 10;
+      min-height: 100vh;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding-top: 6rem;
+    }
+
+    .content-wrapper {
+      max-width: 1536px;
+      width: 100%;
+      text-align: center;
+      padding: 0 1rem;
+    }
+
+    /* Logo Section */
+    .logo-container {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 2rem;
+      animation: logo-entrance 1s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    }
+
+    @keyframes logo-entrance {
+      from {
+        transform: scale(0) rotate(-180deg);
+        opacity: 0;
+      }
+      to {
+        transform: scale(1) rotate(0deg);
+        opacity: 1;
+      }
+    }
+
+    .logo-wrapper {
+      position: relative;
+      width: 160px;
+      height: 160px;
+    }
+
+    .logo {
+      width: 160px;
+      height: 160px;
+      background: linear-gradient(135deg, #f4e04d 0%, #e6d435 100%);
+      border-radius: 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transform: rotate(12deg);
+      position: relative;
+      overflow: hidden;
+      animation: logo-glow 2s infinite;
+    }
+
+    @keyframes logo-glow {
+      0%, 100% {
+        box-shadow: 0 0 20px rgba(244, 228, 77, 0.3);
+      }
+      50% {
+        box-shadow: 0 0 60px rgba(244, 228, 77, 0.6);
+      }
+    }
+
+    /* Mask Cutout Pattern */
+    .mask-grid {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      grid-template-rows: repeat(3, 1fr);
+      gap: 4px;
+      padding: 12px;
+    }
+
+    .mask-cell {
+      background: rgba(62, 18, 87, 0.4);
+      border-radius: 4px;
+      animation: mask-pulse 2s infinite;
+    }
+
+    .mask-cell:nth-child(1) { animation-delay: 0s; }
+    .mask-cell:nth-child(2) { animation-delay: 0.15s; }
+    .mask-cell:nth-child(3) { animation-delay: 0.3s; }
+    .mask-cell:nth-child(4) { animation-delay: 0.45s; }
+    .mask-cell:nth-child(5) { animation-delay: 0.6s; }
+    .mask-cell:nth-child(6) { animation-delay: 0.75s; }
+    .mask-cell:nth-child(7) { animation-delay: 0.9s; }
+    .mask-cell:nth-child(8) { animation-delay: 1.05s; }
+    .mask-cell:nth-child(9) { animation-delay: 1.2s; }
+
+    @keyframes mask-pulse {
+      0%, 100% {
+        transform: scale(1);
+      }
+      50% {
+        transform: scale(0);
+      }
+    }
+
+    /* Center Icon */
+    .logo-icon {
+      position: relative;
+      z-index: 10;
+      animation: icon-wiggle 4s infinite;
+    }
+
+    @keyframes icon-wiggle {
+      0%, 100% {
+        transform: rotate(0deg);
+      }
+      25% {
+        transform: rotate(5deg);
+      }
+      75% {
+        transform: rotate(-5deg);
+      }
+    }
+
+    /* Orbiting Elements */
+    .orbit {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    .orbit-item {
+      position: absolute;
+      width: 40px;
+      height: 40px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Courier New', monospace;
+      font-weight: bold;
+      font-size: 0.875rem;
+      color: white;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+      animation: orbit-rotate 6s linear infinite;
+    }
+
+    .orbit-item:nth-child(1) {
+      background: #a78bfa;
+      animation-delay: 0s;
+    }
+
+    .orbit-item:nth-child(2) {
+      background: #f472b6;
+      animation-delay: -2s;
+    }
+
+    .orbit-item:nth-child(3) {
+      background: #60a5fa;
+      animation-delay: -4s;
+    }
+
+    @keyframes orbit-rotate {
+      from {
+        transform: rotate(0deg) translateX(100px) rotate(0deg);
+      }
+      to {
+        transform: rotate(360deg) translateX(100px) rotate(-360deg);
+      }
+    }
+
+    /* Pulsing Rings */
+    .pulse-ring {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 160px;
+      height: 160px;
+      border: 2px solid rgba(244, 228, 77, 0.3);
+      border-radius: 50%;
+      animation: pulse-ring 3s infinite;
+    }
+
+    .pulse-ring:nth-child(2) {
+      animation-delay: 0.4s;
+    }
+
+    .pulse-ring:nth-child(3) {
+      animation-delay: 0.8s;
+    }
+
+    @keyframes pulse-ring {
+      0% {
+        transform: translate(-50%, -50%) scale(0.8);
+        opacity: 0;
+      }
+      50% {
+        opacity: 0.5;
+      }
+      100% {
+        transform: translate(-50%, -50%) scale(2.1);
+        opacity: 0;
+      }
+    }
+
+    /* Title Section */
+    .title-section {
+      margin-bottom: 1.5rem;
+      animation: slide-up 0.8s ease-out 0.3s backwards;
+    }
+
+    @keyframes slide-up {
+      from {
+        transform: translateY(50px);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    .main-title {
+      font-family: 'Courier New', monospace;
+      font-size: clamp(3rem, 10vw, 6rem);
+      font-weight: bold;
+      color: #f4e04d;
+      text-shadow: 5px 5px 0px rgba(0, 0, 0, 0.4);
+      margin-bottom: 1rem;
+      letter-spacing: 2px;
+    }
+
+    .title-decode {
+      position: relative;
+      display: inline-block;
+    }
+
+    .decode-mask {
+      animation: decode-flicker 2s infinite;
+    }
+
+    @keyframes decode-flicker {
+      0%, 100% {
+        opacity: 0.3;
+      }
+      50% {
+        opacity: 1;
+      }
+    }
+
+    /* Title Letter Boxes */
+    .letter-boxes {
+      display: flex;
+      justify-content: center;
+      gap: 0.5rem;
+      margin-top: 1rem;
+      animation: fade-in 0.5s ease-out 0.8s backwards;
+    }
+
+    @keyframes fade-in {
+      from {
+        opacity: 0;
+      }
+      to {
+        opacity: 1;
+      }
+    }
+
+    .letter-box {
+      width: 2rem;
+      height: 2rem;
+      background: rgba(139, 92, 246, 0.3);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(139, 92, 246, 0.3);
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Courier New', monospace;
+      font-weight: bold;
+      font-size: 0.875rem;
+      color: #d8b4fe;
+      animation: box-pulse 1.5s infinite;
+    }
+
+    @keyframes box-pulse {
+      0%, 100% {
+        background: rgba(139, 92, 246, 0.3);
+        border-color: rgba(139, 92, 246, 0.3);
+      }
+      50% {
+        background: rgba(139, 92, 246, 0.1);
+        border-color: rgba(139, 92, 246, 0.2);
+      }
+    }
+
+    /* Taglines */
+    .tagline-main {
+      font-size: clamp(1.25rem, 3vw, 1.875rem);
+      color: #d8b4fe;
+      margin-bottom: 1rem;
+      font-weight: 600;
+      font-family: 'Courier New', monospace;
+      animation: slide-up 0.8s ease-out 0.5s backwards;
+    }
+
+    .tagline-main .highlight {
+      color: #f4e04d;
+    }
+
+    .tagline-sub {
+      font-size: clamp(1rem, 2vw, 1.125rem);
+      color: #d8b4fe;
+      margin-bottom: 3rem;
+      max-width: 42rem;
+      margin-left: auto;
+      margin-right: auto;
+      animation: slide-up 0.8s ease-out 0.7s backwards;
+    }
+
+    .tagline-sub .highlight {
+      color: #f4e04d;
+      font-weight: bold;
+    }
+
+    /* Start Button */
+    .start-button-wrapper {
+      margin-bottom: 4rem;
+      animation: scale-in 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55) 0.9s backwards;
+    }
+
+    @keyframes scale-in {
+      from {
+        transform: scale(0);
+      }
+      to {
+        transform: scale(1);
+      }
+    }
+
+    .start-button {
+      position: relative;
+      display: inline-block;
+      padding: 1.5rem 4rem;
+      background: #f4e04d;
+      color: #3e1257;
+      font-size: clamp(1.5rem, 3vw, 2rem);
+      font-weight: bold;
+      font-family: 'Courier New', monospace;
+      border: none;
+      border-radius: 9999px;
+      cursor: pointer;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      overflow: hidden;
+      transition: all 0.3s ease;
+      text-decoration: none;
+    }
+
+    .start-button:hover {
+      transform: scale(1.1) rotate(2deg);
+      box-shadow: 0 0 60px rgba(244, 228, 77, 0.8);
+    }
+
+    .start-button:active {
+      transform: scale(0.95);
+    }
+
+    .button-shimmer {
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+      animation: shimmer 3s infinite;
+    }
+
+    @keyframes shimmer {
+      0% {
+        left: -100%;
+      }
+      100% {
+        left: 100%;
+      }
+    }
+
+    .button-stripes {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-around;
+      opacity: 0.2;
+      pointer-events: none;
+    }
+
+    .button-stripe {
+      height: 2px;
+      background: #3e1257;
+      animation: stripe-pulse 2s infinite;
+    }
+
+    @keyframes stripe-pulse {
+      0%, 100% {
+        transform: scaleX(1);
+      }
+      50% {
+        transform: scaleX(0.5);
+      }
+    }
+
+    .button-content {
+      position: relative;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .button-lock {
+      animation: lock-blink 1.5s infinite;
+    }
+
+    @keyframes lock-blink {
+      0%, 100% {
+        opacity: 0.5;
+      }
+      50% {
+        opacity: 1;
+      }
+    }
+
+    .button-arrow {
+      transition: transform 0.2s ease;
+    }
+
+    .start-button:hover .button-arrow {
+      transform: translateX(5px);
+    }
+
+    /* Feature Cards */
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+      animation: slide-up 0.8s ease-out 1.1s backwards;
+    }
+
+    .feature-card {
+      position: relative;
+      background: rgba(74, 34, 105, 0.7);
+      backdrop-filter: blur(10px);
+      border: 2px solid rgba(255, 255, 255, 0.1);
+      border-radius: 1rem;
+      padding: 1.5rem;
+      transition: all 0.3s ease;
+      overflow: hidden;
+      animation: card-entrance 0.6s ease-out backwards;
+    }
+
+    .feature-card:nth-child(1) {
+      animation-delay: 1.3s;
+    }
+
+    .feature-card:nth-child(2) {
+      animation-delay: 1.4s;
+    }
+
+    .feature-card:nth-child(3) {
+      animation-delay: 1.5s;
+    }
+
+    @keyframes card-entrance {
+      from {
+        transform: scale(0) rotate(-180deg);
+        opacity: 0;
+      }
+      to {
+        transform: scale(1) rotate(0deg);
+        opacity: 1;
+      }
+    }
+
+    .feature-card:hover {
+      transform: scale(1.05) translateY(-5px);
+      border-color: rgba(244, 228, 77, 0.5);
+    }
+
+    .feature-bg-pattern {
+      position: absolute;
+      inset: 0;
+      opacity: 0.05;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      grid-template-rows: repeat(4, 1fr);
+      gap: 0.5rem;
+      padding: 1rem;
+    }
+
+    .pattern-cell {
+      background: white;
+      border-radius: 2px;
+      animation: pattern-fade 2s infinite;
+    }
+
+    @keyframes pattern-fade {
+      0%, 100% {
+        opacity: 0.5;
+      }
+      50% {
+        opacity: 0;
+      }
+    }
+
+    .feature-content {
+      position: relative;
+      z-index: 10;
+    }
+
+    .feature-icon {
+      font-size: 3rem;
+      margin-bottom: 0.75rem;
+      display: block;
+    }
+
+    .feature-title {
+      font-family: 'Courier New', monospace;
+      font-size: 1.25rem;
+      font-weight: bold;
+      color: white;
+      margin-bottom: 0.5rem;
+    }
+
+    .feature-description {
+      color: #d8b4fe;
+      font-size: 0.875rem;
+      margin-bottom: 1rem;
+    }
+
+    .feature-mask {
+      padding: 0.5rem 0.75rem;
+      background: rgba(88, 28, 135, 0.5);
+      border-radius: 0.5rem;
+      font-family: 'Courier New', monospace;
+      font-size: 0.75rem;
+      color: #d8b4fe;
+      text-align: center;
+    }
+
+    /* Keyboard Hint */
+    .keyboard-hint {
+      color: rgba(192, 132, 252, 0.6);
+      font-size: 0.875rem;
+      margin-top: 2rem;
+      animation: fade-in 0.5s ease-out 2s backwards;
+    }
+
+    .kbd {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      background: rgba(88, 28, 135, 0.5);
+      border-radius: 4px;
+      font-family: 'Courier New', monospace;
+      margin: 0 0.25rem;
+    }
+
+    /* Version Badge */
+    .version-badge {
+      position: fixed;
+      bottom: 2rem;
+      left: 2rem;
+      color: rgba(192, 132, 252, 0.5);
+      font-size: 0.875rem;
+      font-family: 'Courier New', monospace;
+      animation: fade-in 0.5s ease-out 2.5s backwards;
+      z-index: 20;
+    }
+
+    .version-badge .highlight {
+      color: #f4e04d;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      .hero-container {
+        padding-top: 3rem;
+      }
+
+      .logo-wrapper {
+        width: 120px;
+        height: 120px;
+      }
+
+      .logo {
+        width: 120px;
+        height: 120px;
+      }
+
+      .orbit-item {
+        width: 30px;
+        height: 30px;
+        font-size: 0.75rem;
+      }
+
+      @keyframes orbit-rotate {
+        from {
+          transform: rotate(0deg) translateX(70px) rotate(0deg);
+        }
+        to {
+          transform: rotate(360deg) translateX(70px) rotate(-360deg);
+        }
+      }
+
+      .start-button {
+        padding: 1rem 2rem;
+        font-size: 1.25rem;
+      }
+
+      .features-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .version-badge {
+        bottom: 1rem;
+        left: 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Animated Particles -->
+  <div class="particle-container" id="particles"></div>
+
+  <!-- Masked Code Snippets -->
+  <div class="code-snippet-container" id="codeSnippets"></div>
+
+  <!-- Main Hero Content -->
+  <div class="hero-container">
+    <div class="content-wrapper">
+      
+      <!-- Logo Section -->
+      <div class="logo-container">
+        <div class="logo-wrapper">
+          <!-- Pulsing Rings -->
+          <div class="pulse-ring"></div>
+          <div class="pulse-ring"></div>
+          <div class="pulse-ring"></div>
+
+          <!-- Main Logo -->
+          <div class="logo">
+            <!-- Mask Grid Pattern -->
+            <div class="mask-grid">
+              <div class="mask-cell"></div>
+              <div class="mask-cell"></div>
+              <div class="mask-cell"></div>
+              <div class="mask-cell"></div>
+              <div class="mask-cell"></div>
+              <div class="mask-cell"></div>
+              <div class="mask-cell"></div>
+              <div class="mask-cell"></div>
+              <div class="mask-cell"></div>
+            </div>
+
+            <!-- Center Icon -->
+            <div class="logo-icon">
+              <svg viewBox="0 0 100 100" width="80" height="80">
+                <path
+                  d="M20,30 L10,50 L20,70"
+                  stroke="#3e1257"
+                  stroke-width="6"
+                  fill="none"
+                  stroke-linecap="round"
+                />
+                <path
+                  d="M80,30 L90,50 L80,70"
+                  stroke="#3e1257"
+                  stroke-width="6"
+                  fill="none"
+                  stroke-linecap="round"
+                />
+                <circle cx="50" cy="50" r="15" fill="#3e1257" />
+                <text
+                  x="50"
+                  y="58"
+                  text-anchor="middle"
+                  fill="#f4e04d"
+                  font-size="24"
+                  font-weight="bold"
+                  font-family="Courier New"
+                >
+                  ?
+                </text>
+              </svg>
+            </div>
+          </div>
+
+          <!-- Orbiting Elements -->
+          <div class="orbit">
+            <div class="orbit-item">__</div>
+            <div class="orbit-item">??</div>
+            <div class="orbit-item">▓▓</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Title Section -->
+      <div class="title-section">
+        <h1 class="main-title">
+          <span class="title-decode">
+            Co<span class="decode-mask">De</span>cipher
+          </span>
+        </h1>
+
+        <!-- Letter Boxes -->
+        <div class="letter-boxes">
+          <div class="letter-box">_</div>
+          <div class="letter-box">o</div>
+          <div class="letter-box">_</div>
+          <div class="letter-box">e</div>
+          <div class="letter-box">_</div>
+          <div class="letter-box">i</div>
+          <div class="letter-box">_</div>
+          <div class="letter-box">h</div>
+          <div class="letter-box">_</div>
+          <div class="letter-box">r</div>
+        </div>
+      </div>
+
+      <!-- Taglines -->
+      <p class="tagline-main">
+        <span class="highlight">Unmask</span> the Code, <span class="highlight">Reveal</span> Your Skills
+      </p>
+
+      <p class="tagline-sub">
+        Fill in the <span class="highlight">masked blanks</span>, decipher the patterns,
+        and master programming through interactive challenges
+      </p>
+
+      <!-- Start Button -->
+      <div class="start-button-wrapper">
+        <a href="menu.html" class="start-button">
+          <div class="button-shimmer"></div>
+          <div class="button-stripes">
+            <div class="button-stripe" style="animation-delay: 0s;"></div>
+            <div class="button-stripe" style="animation-delay: 0.2s;"></div>
+            <div class="button-stripe" style="animation-delay: 0.4s;"></div>
+            <div class="button-stripe" style="animation-delay: 0.6s;"></div>
+            <div class="button-stripe" style="animation-delay: 0.8s;"></div>
+          </div>
+          <span class="button-content">
+            <span class="button-lock">🔓</span>
+            UNMASK & START
+            <span class="button-arrow">→</span>
+          </span>
+        </a>
+      </div>
+
+      <!-- Feature Cards -->
+      <div class="features-grid">
+        <!-- Feature 1 -->
+        <div class="feature-card">
+          <div class="feature-bg-pattern">
+            <div class="pattern-cell" style="animation-delay: 0s;"></div>
+            <div class="pattern-cell" style="animation-delay: 0.1s;"></div>
+            <div class="pattern-cell" style="animation-delay: 0.2s;"></div>
+            <div class="pattern-cell" style="animation-delay: 0.3s;"></div>
+            <div class="pattern-cell" style="animation-delay: 0.4s;"></div>
+            <div class="pattern-cell" style="animation-delay: 0.5s;"></div>
+            <div class="pattern-cell" style="animation-delay: 0.6s;"></div>
+            <div class="pattern-cell" style="animation-delay: 0.7s;"></div>
+            <div class="pattern-cell" style="animation-delay: 0.8s;"></div>
+            <div class="pattern-cell" style="animation-delay: 0.9s;"></div>
+            <div class="pattern-cell" style="animation-delay: 1s;"></div>
+            <div class="pattern-cell" style="animation-delay: 1.1s;"></div>
+            <div class="pattern-cell" style="animation-delay: 1.2s;"></div>
+            <div class="pattern-cell" style="animation-delay: 1.3s;"></div>
+            <div class="pattern-cell" style="animation-delay: 1.4s;"></div>
+            <div class="pattern-cell" style="animation-delay: 1.5s;"></div>
+          </div>
+          <div class="feature-content">
+            <span class="feature-icon">🎯</span>
+            <h3 class="feature-title">Fill the Blanks</h3>
+            <p class="feature-description">Unmask hidden code segments</p>
+            <div class="feature-mask">__ __ __</div>
+          </div>
+        </div>
+
+        <!-- Feature 2 -->
+        <div class="feature-card">
+          <div class="feature-bg-pattern">
+            <div class="pattern-cell" style="animation-delay: 0s;"></div>
+            <div class="pattern-cell" style="animation-delay: 0.1s;"></div>
+            <div class="pattern-cell" style="animation-delay: 0.2s;"></div>
+            <div class="pattern-cell" style="animation-delay: 0.3s;"></div>
+            <div class="pattern-cell" style="animation-delay: 0.4s;"></div>
+            <div class="pattern-cell" style="animation-delay: 0.5s;"></div>
+            <div class="pattern-cell" style="animation-delay: 0.6s;"></div>
+            <div class="pattern-cell" style="animation-delay: 0.7s;"></div>
+            <div class="pattern-cell" style="animation-delay: 0.8s;"></div>
+            <div class="pattern-cell" style="animation-delay: 0.9s;"></div>
+            <div class="pattern-cell" style="animation-delay: 1s;"></div>
+            <div class="pattern-cell" style="animation-delay: 1.1s;"></div>
+            <div class="pattern-cell" style="animation-delay: 1.2s;"></div>
+            <div class="pattern-cell" style="animation-delay: 1.3s;"></div>
+            <div class="pattern-cell" style="animation-delay: 1.4s;"></div>
+            <div class="pattern-cell" style="animation-delay: 1.5s;"></div>
+          </div>
+          <div class="feature-content">
+            <span class="feature-icon">🤝</span>
+            <h3 class="feature-title">Co-op Decipher</h3>
+            <p class="feature-description">Team up to reveal the code</p>
+            <div class="feature-mask">P1__ P2__</div>
+          </div>
+        </div>
+
+        <!-- Feature 3 -->
+        <div class="feature-card">
+          <div class="feature-bg-pattern">
+            <div class="pattern-cell" style="animation-delay: 0s;"></div>
+            <div class="pattern-cell" style="animation-delay: 0.1s;"></div>
+            <div class="pattern-cell" style="animation-delay: 0.2s;"></div>
+            <div class="pattern-cell" style="animation-delay: 0.3s;"></div>
+            <div class="pattern-cell" style="animation-delay: 0.4s;"></div>
+            <div class="pattern-cell" style="animation-delay: 0.5s;"></div>
+            <div class="pattern-cell" style="animation-delay: 0.6s;"></div>
+            <div class="pattern-cell" style="animation-delay: 0.7s;"></div>
+            <div class="pattern-cell" style="animation-delay: 0.8s;"></div>
+            <div class="pattern-cell" style="animation-delay: 0.9s;"></div>
+            <div class="pattern-cell" style="animation-delay: 1s;"></div>
+            <div class="pattern-cell" style="animation-delay: 1.1s;"></div>
+            <div class="pattern-cell" style="animation-delay: 1.2s;"></div>
+            <div class="pattern-cell" style="animation-delay: 1.3s;"></div>
+            <div class="pattern-cell" style="animation-delay: 1.4s;"></div>
+            <div class="pattern-cell" style="animation-delay: 1.5s;"></div>
+          </div>
+          <div class="feature-content">
+            <span class="feature-icon">🏆</span>
+            <h3 class="feature-title">Unmask Glory</h3>
+            <p class="feature-description">Compete on leaderboards</p>
+            <div class="feature-mask">#1 ___</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Keyboard Hint -->
+      <p class="keyboard-hint">
+        Press <kbd class="kbd">Enter</kbd> to unmask the challenges
+      </p>
+
+    </div>
+  </div>
+
+  <!-- Version Badge -->
+  <div class="version-badge">
+    v1.0.0 <span class="highlight">masked</span>
+  </div>
+
+  <script>
+    // Generate Animated Particles
+    const particleContainer = document.getElementById('particles');
+    for (let i = 0; i < 60; i++) {
+      const particle = document.createElement('div');
+      particle.className = 'particle';
+      particle.style.left = Math.random() * 100 + '%';
+      particle.style.top = Math.random() * 100 + '%';
+      particle.style.setProperty('--drift', (Math.random() * 50 - 25) + 'px');
+      particle.style.animationDelay = Math.random() * 5 + 's';
+      particle.style.animationDuration = (5 + Math.random() * 15) + 's';
+      particleContainer.appendChild(particle);
+    }
+
+    // Generate Masked Code Snippets
+    const codeSnippets = ['for(;;)', 'if(___)', 'while(__)', 'int __', 'void __', 'return _'];
+    const codeContainer = document.getElementById('codeSnippets');
+    
+    codeSnippets.forEach((snippet, i) => {
+      const codeElement = document.createElement('div');
+      codeElement.className = 'code-snippet';
+      codeElement.textContent = snippet;
+      codeElement.style.left = Math.random() * 100 + '%';
+      codeElement.style.top = Math.random() * 100 + '%';
+      codeElement.style.animationDelay = (i * 0.5) + 's';
+      codeElement.style.animationDuration = (8 + Math.random() * 4) + 's';
+      codeContainer.appendChild(codeElement);
+    });
+
+    // Start Game Function - Now goes to menu.html
+    function startGame() {
+      window.location.href = 'menu.html';
+    }
+
+    // Enter key listener
+    document.addEventListener('keydown', function(event) {
+      if (event.key === 'Enter') {
+        startGame();
+      }
+    });
+  </script>
+</body>
+</html>

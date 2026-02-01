@@ -1,0 +1,1094 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Co-op Multiplayer - Hackathon</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #3e1257 0%, #5c1069 50%, #3e1257 100%);
+      min-height: 100vh;
+      color: #fff;
+      overflow-x: hidden;
+    }
+
+    /* Animated Particle Background */
+    .particle-bg {
+      position: fixed;
+      inset: 0;
+      overflow: hidden;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .particle {
+      position: absolute;
+      width: 4px;
+      height: 4px;
+      background: rgba(244, 228, 77, 0.2);
+      border-radius: 50%;
+      animation: float-particle 10s infinite;
+    }
+
+    @keyframes float-particle {
+      0% {
+        transform: translateY(0) translateX(0);
+        opacity: 0;
+      }
+      50% {
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(-100vh) translateX(50px);
+        opacity: 0;
+      }
+    }
+
+    /* Back Button */
+    .back-button {
+      position: fixed;
+      top: 2rem;
+      left: 2rem;
+      width: 3.5rem;
+      height: 3.5rem;
+      background: #f4e04d;
+      border: none;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      z-index: 50;
+      box-shadow: 0 0 30px rgba(244, 228, 77, 0.3);
+      transition: all 0.3s ease;
+      text-decoration: none;
+    }
+
+    .back-button:hover {
+      transform: scale(1.1) rotate(-5deg);
+      box-shadow: 0 0 40px rgba(244, 228, 77, 0.6);
+    }
+
+    .back-button svg {
+      width: 1.75rem;
+      height: 1.75rem;
+      stroke: #3e1257;
+      stroke-width: 3;
+      fill: none;
+    }
+
+    /* Timer */
+    .timer {
+      position: fixed;
+      top: 2rem;
+      right: 2rem;
+      background: #f4e04d;
+      padding: 0.75rem 2rem;
+      border-radius: 2rem;
+      box-shadow: 0 0 20px rgba(244, 228, 77, 0.3);
+      z-index: 50;
+    }
+
+    .timer.warning {
+      animation: pulse-timer 1s infinite;
+    }
+
+    @keyframes pulse-timer {
+      0%, 100% {
+        box-shadow: 0 0 20px rgba(244, 228, 77, 0.5);
+      }
+      50% {
+        box-shadow: 0 0 40px rgba(244, 228, 77, 0.8);
+      }
+    }
+
+    .timer-text {
+      font-family: 'Courier New', monospace;
+      font-size: 1.875rem;
+      font-weight: bold;
+      color: #3e1257;
+    }
+
+    .timer-text.warning {
+      color: #dc2626;
+    }
+
+    /* Status Bar */
+    .status-bar {
+      position: fixed;
+      top: 6rem;
+      right: 2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      z-index: 40;
+    }
+
+    .status-item {
+      background: rgba(74, 34, 105, 0.7);
+      backdrop-filter: blur(10px);
+      padding: 0.5rem 1rem;
+      border-radius: 0.5rem;
+      font-size: 0.875rem;
+      font-weight: bold;
+      color: white;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .status-item.waiting {
+      background: rgba(251, 191, 36, 0.8);
+      color: #78350f;
+    }
+
+    .status-item.paired {
+      background: rgba(34, 197, 94, 0.8);
+      color: #14532d;
+    }
+
+    /* Waiting Overlay */
+    .overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.9);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      backdrop-filter: blur(10px);
+    }
+
+    .overlay-content {
+      background: rgba(74, 34, 105, 0.95);
+      backdrop-filter: blur(20px);
+      padding: 3rem 2.5rem;
+      border-radius: 1.5rem;
+      text-align: center;
+      max-width: 600px;
+      width: 90%;
+      border: 2px solid rgba(244, 228, 77, 0.3);
+      box-shadow: 0 0 50px rgba(244, 228, 77, 0.2);
+      animation: modalPop 0.5s ease;
+    }
+
+    @keyframes modalPop {
+      0% {
+        transform: scale(0.5);
+        opacity: 0;
+      }
+      100% {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+
+    .spinner {
+      width: 60px;
+      height: 60px;
+      border: 5px solid rgba(244, 228, 77, 0.2);
+      border-top: 5px solid #f4e04d;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 1.5rem;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .overlay-content h2 {
+      color: #f4e04d;
+      font-size: 2rem;
+      margin-bottom: 1rem;
+      font-family: 'Courier New', monospace;
+      text-shadow: 2px 2px 0px rgba(0, 0, 0, 0.3);
+    }
+
+    .overlay-content p {
+      color: #d8b4fe;
+      margin-bottom: 1.5rem;
+      font-size: 1rem;
+    }
+
+    /* Category Selection */
+    .category-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1.25rem;
+      margin-top: 1.5rem;
+    }
+
+    .category-card {
+      background: #ad54e0;
+      color: white;
+      padding: 2rem 1.5rem;
+      border-radius: 1rem;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s;
+      border: 3px solid transparent;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .category-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: repeating-linear-gradient(
+        45deg,
+        transparent,
+        transparent 10px,
+        rgba(255, 255, 255, 0.05) 10px,
+        rgba(255, 255, 255, 0.05) 20px
+      );
+      pointer-events: none;
+    }
+
+    .category-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 20px rgba(173, 84, 224, 0.4);
+    }
+
+    .category-card.selected {
+      border-color: #28a745;
+      box-shadow: 0 0 0 3px rgba(40, 167, 69, 0.3);
+    }
+
+    .category-icon {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    .category-name {
+      font-size: 1.25rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    .category-desc {
+      font-size: 0.875rem;
+      opacity: 0.9;
+      position: relative;
+      z-index: 1;
+    }
+
+    .start-btn {
+      background: #28a745;
+      color: white;
+      border: none;
+      padding: 0.75rem 2.5rem;
+      border-radius: 2rem;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 1.5rem;
+      transition: all 0.3s;
+    }
+
+    .start-btn:hover:not(:disabled) {
+      background: #218838;
+      transform: scale(1.05);
+    }
+
+    .start-btn:disabled {
+      background: #6c757d;
+      cursor: not-allowed;
+      opacity: 0.5;
+    }
+
+    .cancel-btn {
+      background: #dc3545;
+      color: white;
+      border: none;
+      padding: 0.625rem 1.875rem;
+      border-radius: 1.25rem;
+      font-size: 0.875rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .cancel-btn:hover {
+      background: #c82333;
+      transform: scale(1.05);
+    }
+
+    /* Main Game Area */
+    .main-container {
+      position: relative;
+      min-height: 100vh;
+      padding: 8rem 1rem 2rem;
+      z-index: 10;
+    }
+
+    .coop-title {
+      text-align: center;
+      font-size: 2rem;
+      font-weight: bold;
+      color: #f4e04d;
+      font-family: 'Courier New', monospace;
+      text-shadow: 2px 2px 0px rgba(0, 0, 0, 0.3);
+      margin-bottom: 2rem;
+      max-width: 80rem;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .coop-title .emoji {
+      display: inline-block;
+      animation: rotate-emoji 2s infinite;
+    }
+
+    @keyframes rotate-emoji {
+      0%, 100% { transform: rotate(0deg); }
+      25% { transform: rotate(10deg); }
+      75% { transform: rotate(-10deg); }
+    }
+
+    /* Progress Bars */
+    .progress-container {
+      max-width: 64rem;
+      margin: 0 auto 2rem;
+    }
+
+    .progress-player {
+      margin-bottom: 1rem;
+    }
+
+    .progress-header {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 0.25rem;
+    }
+
+    .progress-dot {
+      width: 0.75rem;
+      height: 0.75rem;
+      border-radius: 50%;
+      animation: pulse-dot 1.5s infinite;
+    }
+
+    .progress-dot.player1 {
+      background: #4ade80;
+    }
+
+    .progress-dot.player2 {
+      background: #60a5fa;
+    }
+
+    @keyframes pulse-dot {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.2); }
+    }
+
+    .progress-label {
+      color: white;
+      font-weight: bold;
+      font-size: 0.875rem;
+    }
+
+    .progress-percent {
+      margin-left: auto;
+      font-size: 0.875rem;
+    }
+
+    .progress-percent.player1 {
+      color: #4ade80;
+    }
+
+    .progress-percent.player2 {
+      color: #60a5fa;
+    }
+
+    .progress-bar-bg {
+      height: 0.5rem;
+      background: rgba(58, 16, 87, 0.5);
+      backdrop-filter: blur(10px);
+      border-radius: 9999px;
+      overflow: hidden;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      transition: width 0.3s ease;
+    }
+
+    .progress-bar-fill.player1 {
+      background: linear-gradient(to right, #4ade80, #22c55e);
+    }
+
+    .progress-bar-fill.player2 {
+      background: linear-gradient(to right, #60a5fa, #3b82f6);
+    }
+
+    /* Player Columns */
+    .players-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+      gap: 1.5rem;
+      max-width: 112rem;
+      margin: 0 auto 2rem;
+    }
+
+    .player-column {
+      background: rgba(74, 34, 105, 0.7);
+      backdrop-filter: blur(10px);
+      border-radius: 1.5rem;
+      padding: 1.5rem;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+      border: 2px solid rgba(255, 255, 255, 0.1);
+      transition: all 0.3s ease;
+    }
+
+    .player-column.active {
+      border-color: rgba(244, 228, 77, 0.5);
+      box-shadow: 0 0 30px rgba(244, 228, 77, 0.3);
+    }
+
+    .player-column.blurred {
+      filter: blur(2px);
+      opacity: 0.6;
+      pointer-events: none;
+      user-select: none;
+    }
+
+    .player-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+      padding-bottom: 1rem;
+      border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .player-title {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: white;
+      font-family: 'Courier New', monospace;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .player-indicator {
+      width: 1rem;
+      height: 1rem;
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+
+    .player-indicator.player1 {
+      background: #4ade80;
+    }
+
+    .player-indicator.player2 {
+      background: #60a5fa;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+
+    .player-badge {
+      background: #667eea;
+      color: white;
+      padding: 0.25rem 0.75rem;
+      border-radius: 0.75rem;
+      font-size: 0.688rem;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+
+    .player-badge.you {
+      background: #28a745;
+    }
+
+    .task-info {
+      background: rgba(26, 10, 46, 0.5);
+      padding: 1rem;
+      border-radius: 0.5rem;
+      margin-bottom: 1rem;
+      border-left: 4px solid #f4e04d;
+    }
+
+    .task-label {
+      font-size: 0.75rem;
+      color: #f4e04d;
+      font-weight: 700;
+      text-transform: uppercase;
+      margin-bottom: 0.5rem;
+      font-family: 'Courier New', monospace;
+    }
+
+    .task-desc {
+      font-size: 0.813rem;
+      color: #d8b4fe;
+      line-height: 1.6;
+    }
+
+    .code-display {
+      background: #1a0a2e;
+      color: #abb2bf;
+      padding: 1.25rem;
+      border-radius: 0.75rem;
+      font-family: 'Courier New', monospace;
+      font-size: 0.875rem;
+      line-height: 1.8;
+      overflow-x: auto;
+      white-space: pre;
+      margin-bottom: 1rem;
+      min-height: 300px;
+    }
+
+    .blank-input {
+      display: inline-block;
+      background: #1e2127;
+      border: 2px solid #61afef;
+      border-radius: 4px;
+      padding: 4px 10px;
+      font-size: 14px;
+      font-family: 'Courier New', monospace;
+      min-width: 100px;
+      max-width: 200px;
+      text-align: center;
+      outline: none;
+      transition: all 0.3s;
+      color: #e06c75;
+      font-weight: bold;
+      vertical-align: middle;
+      line-height: normal;
+    }
+
+    .blank-input:focus {
+      border-color: #c678dd;
+      box-shadow: 0 0 0 3px rgba(198, 120, 221, 0.3);
+      background: #282c34;
+    }
+
+    .blank-input.filled {
+      border-color: #98c379;
+      color: #98c379;
+    }
+
+    .blank-input:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+    }
+
+    /* Prevent weird symbols from placeholder */
+    .blank-input::placeholder {
+      color: #5c6370;
+      opacity: 0.5;
+    }
+
+    .blank-placeholder {
+      display: inline-block;
+      background: #3e4451;
+      color: #5c6370;
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-family: 'Courier New', monospace;
+      min-width: 100px;
+      text-align: center;
+      font-weight: bold;
+    }
+
+    .blank-filled {
+      display: inline-block;
+      background: #2c3e50;
+      color: #7f8c8d;
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-family: 'Courier New', monospace;
+      min-width: 60px;
+      text-align: center;
+      font-weight: bold;
+      letter-spacing: 2px;
+    }
+
+    .submit-section {
+      display: flex;
+      gap: 0.75rem;
+    }
+
+    .submit-btn {
+      flex: 1;
+      background: #667eea;
+      color: white;
+      border: none;
+      padding: 0.75rem;
+      border-radius: 0.5rem;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      font-family: 'Courier New', monospace;
+      text-transform: uppercase;
+    }
+
+    .submit-btn:hover:not(:disabled) {
+      background: #5568d3;
+      transform: scale(1.02);
+    }
+
+    .submit-btn:disabled {
+      background: #6c757d;
+      cursor: not-allowed;
+      opacity: 0.5;
+    }
+
+    /* Results Overlay */
+    .results-overlay {
+      background: rgba(74, 34, 105, 0.98);
+      backdrop-filter: blur(20px);
+      padding: 3.75rem 3rem;
+      border-radius: 1.5rem;
+      text-align: center;
+      max-width: 600px;
+      animation: modalPop 0.5s ease;
+      border: 2px solid rgba(244, 228, 77, 0.3);
+    }
+
+    .grade-display {
+      font-size: 7.5rem;
+      font-weight: 700;
+      margin: 1.25rem 0;
+      font-family: 'Courier New', monospace;
+      animation: grade-pulse 2s infinite;
+    }
+
+    @keyframes grade-pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+
+    .grade-a {
+      color: #4ade80;
+      text-shadow: 0 0 30px rgba(74, 222, 128, 0.5);
+    }
+
+    .grade-b, .grade-c {
+      color: #60a5fa;
+      text-shadow: 0 0 30px rgba(96, 165, 250, 0.5);
+    }
+
+    .grade-f {
+      color: #f87171;
+      text-shadow: 0 0 30px rgba(248, 113, 113, 0.5);
+    }
+
+    .results-title {
+      font-size: 2rem;
+      color: #f4e04d;
+      margin-bottom: 1rem;
+      font-weight: 700;
+      font-family: 'Courier New', monospace;
+      text-shadow: 2px 2px 0px rgba(0, 0, 0, 0.3);
+    }
+
+    .results-stats {
+      background: rgba(26, 10, 46, 0.7);
+      padding: 1.25rem;
+      border-radius: 0.5rem;
+      margin: 1.25rem 0;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .stat-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.625rem 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .stat-row:last-child {
+      border-bottom: none;
+    }
+
+    .stat-label {
+      color: #d8b4fe;
+      font-weight: 600;
+    }
+
+    .stat-value {
+      color: #fff;
+      font-weight: 700;
+      font-family: 'Courier New', monospace;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    @media (max-width: 1024px) {
+      .players-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .coop-title {
+        font-size: 1.5rem;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .main-container {
+        padding-top: 10rem;
+      }
+
+      .timer {
+        top: 1rem;
+        right: 1rem;
+        padding: 0.5rem 1.5rem;
+      }
+
+      .timer-text {
+        font-size: 1.5rem;
+      }
+
+      .back-button {
+        top: 1rem;
+        left: 1rem;
+        width: 3rem;
+        height: 3rem;
+      }
+
+      .grade-display {
+        font-size: 5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Animated Background -->
+  <div class="particle-bg" id="particleBg"></div>
+
+  <!-- Back Button -->
+  <a href="menu.html" class="back-button">
+    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+    </svg>
+  </a>
+
+  <!-- Timer -->
+  <div class="timer hidden" id="timer">
+    <div class="timer-text" id="timerText">05:00</div>
+  </div>
+
+  <!-- Status Bar -->
+  <div class="status-bar">
+    <div class="status-item" id="statusIndicator">Connecting...</div>
+  </div>
+
+  <!-- Waiting Overlay -->
+  <div class="overlay" id="waitingOverlay">
+    <div class="overlay-content">
+      <div class="spinner"></div>
+      <h2 id="waitingMessage">Waiting for partner...</h2>
+      <p>Share the URL with a friend to start co-op mode!</p>
+      <button class="cancel-btn" onclick="location.href='menu.html'">Cancel & Return to Menu</button>
+    </div>
+  </div>
+
+  <!-- Category Selection Overlay -->
+  <div class="overlay hidden" id="categoryOverlay">
+    <div class="overlay-content">
+      <h2>🎭 Choose Your Challenge</h2>
+      <p>Player 1 selects the category type</p>
+      
+      <div class="category-grid">
+        <div class="category-card" data-category="frontend_backend">
+          <div class="category-icon">🎨⚙️</div>
+          <div class="category-name">Frontend + Backend</div>
+          <div class="category-desc">Player 1: Frontend | Player 2: Backend</div>
+        </div>
+        
+        <div class="category-card" data-category="both_backends">
+          <div class="category-icon">⚙️⚙️</div>
+          <div class="category-name">Both Backends</div>
+          <div class="category-desc">Both players work on backend code</div>
+        </div>
+      </div>
+      
+      <button class="start-btn" id="startCoopBtn" disabled>Start Co-op Challenge →</button>
+    </div>
+  </div>
+
+  <!-- Results Overlay -->
+  <div class="overlay hidden" id="resultsOverlay">
+    <div class="results-overlay">
+      <div class="results-title">🎉 Challenge Complete!</div>
+      <div class="grade-display grade-a" id="gradeDisplay">A</div>
+      <div class="results-stats">
+        <div class="stat-row">
+          <span class="stat-label">Total Questions:</span>
+          <span class="stat-value" id="totalQuestions">0</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-label">Correct Answers:</span>
+          <span class="stat-value" id="correctAnswers">0</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-label">Time Taken:</span>
+          <span class="stat-value" id="timeTaken">00:00</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-label">Accuracy:</span>
+          <span class="stat-value" id="accuracy">0%</span>
+        </div>
+      </div>
+      <button class="start-btn" onclick="location.href='menu.html'">Back to Menu</button>
+    </div>
+  </div>
+
+  <!-- Main Game Area -->
+  <div class="main-container">
+    <!-- Co-op Title -->
+    <h1 class="coop-title">
+      <span class="emoji">🤝</span>
+      Co-op Challenge: Work together to complete the code!
+    </h1>
+
+    <!-- Progress Bars -->
+    <div class="progress-container">
+      <div class="progress-player">
+        <div class="progress-header">
+          <div class="progress-dot player1"></div>
+          <span class="progress-label">Player 1</span>
+          <span class="progress-percent player1" id="player1Progress">0%</span>
+        </div>
+        <div class="progress-bar-bg">
+          <div class="progress-bar-fill player1" id="player1ProgressBar" style="width: 0%"></div>
+        </div>
+      </div>
+
+      <div class="progress-player">
+        <div class="progress-header">
+          <div class="progress-dot player2"></div>
+          <span class="progress-label">Player 2</span>
+          <span class="progress-percent player2" id="player2Progress">0%</span>
+        </div>
+        <div class="progress-bar-bg">
+          <div class="progress-bar-fill player2" id="player2ProgressBar" style="width: 0%"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Players Grid -->
+    <div class="players-grid">
+      <!-- Player 1 Column -->
+      <div class="player-column" id="player1Card">
+        <div class="player-header">
+          <div class="player-title">
+            <div class="player-indicator player1"></div>
+            <span id="player1Name">PLAYER 1</span>
+          </div>
+          <div class="player-badge" id="player1Badge">WAITING</div>
+        </div>
+        
+        <div class="task-info">
+          <div class="task-label" id="player1TaskLabel">Your Task</div>
+          <div class="task-desc" id="player1TaskDesc">
+            Complete a REST API login endpoint with authentication using JWT.
+          </div>
+        </div>
+        
+        <div class="code-display" id="player1Code">// Waiting for code...</div>
+        
+        <div class="submit-section">
+          <button class="submit-btn" id="player1SubmitBtn" disabled>Submit</button>
+        </div>
+      </div>
+
+      <!-- Player 2 Column -->
+      <div class="player-column" id="player2Card">
+        <div class="player-header">
+          <div class="player-title">
+            <div class="player-indicator player2"></div>
+            <span id="player2Name">PLAYER 2</span>
+          </div>
+          <div class="player-badge" id="player2Badge">WAITING</div>
+        </div>
+        
+        <div class="task-info">
+          <div class="task-label" id="player2TaskLabel">Your Task</div>
+          <div class="task-desc" id="player2TaskDesc">
+            Build a database query function with optional filters and pagination.
+          </div>
+        </div>
+        
+        <div class="code-display" id="player2Code">// Waiting for code...</div>
+        
+        <div class="submit-section">
+          <button class="submit-btn" id="player2SubmitBtn" disabled>Submit</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="multiplayer-client-coop.js"></script>
+  <script>
+    // Generate animated particles
+    const particleBg = document.getElementById('particleBg');
+    for (let i = 0; i < 40; i++) {
+      const particle = document.createElement('div');
+      particle.className = 'particle';
+      particle.style.left = Math.random() * 100 + '%';
+      particle.style.top = Math.random() * 100 + '%';
+      particle.style.animationDelay = Math.random() * 4 + 's';
+      particle.style.animationDuration = (4 + Math.random() * 8) + 's';
+      particleBg.appendChild(particle);
+    }
+
+    // Helper function to update visual progress bars
+    // This ensures the progress bars in the HTML are updated when the JS sends progress
+    function updateProgressBar(player, progress) {
+      const progressElement = document.getElementById(`player${player}Progress`);
+      const progressBar = document.getElementById(`player${player}ProgressBar`);
+      
+      if (progressElement && progressBar) {
+        progressElement.textContent = `${Math.round(progress)}%`;
+        progressBar.style.width = `${progress}%`;
+      }
+    }
+
+    // Override the handlePartnerProgress to ensure visual updates
+    const originalHandlePartnerProgress = window.handlePartnerProgress;
+    if (typeof originalHandlePartnerProgress === 'function') {
+      window.handlePartnerProgress = function(data) {
+        // Call original function
+        originalHandlePartnerProgress(data);
+        
+        // Update visual progress bar
+        const partnerNumber = myRole === 'player1' ? 2 : 1;
+        updateProgressBar(partnerNumber, data.progress);
+      };
+    }
+
+    // Monitor all blank inputs and update progress in real-time
+    function monitorInputs() {
+      const myCodeElement = myRole === 'player1' ? document.getElementById('player1Code') : document.getElementById('player2Code');
+      if (!myCodeElement) return;
+
+      const inputs = myCodeElement.querySelectorAll('.blank-input');
+      if (inputs.length === 0) return;
+
+      inputs.forEach((input, index) => {
+        // Remove any existing listeners to prevent duplicates
+        const newInput = input.cloneNode(true);
+        input.parentNode.replaceChild(newInput, input);
+
+        // Add fresh input listener
+        newInput.addEventListener('input', function(e) {
+          const value = e.target.value.trim();
+          
+          // Update visual state
+          if (value) {
+            e.target.classList.add('filled');
+          } else {
+            e.target.classList.remove('filled');
+          }
+
+          // Calculate and update my progress
+          const allInputs = myCodeElement.querySelectorAll('.blank-input');
+          const filledCount = Array.from(allInputs).filter(inp => inp.value.trim() !== '').length;
+          const progress = Math.round((filledCount / allInputs.length) * 100);
+          
+          // Update my progress bar
+          const myNumber = myRole === 'player1' ? 1 : 2;
+          updateProgressBar(myNumber, progress);
+
+          // Update myAnswers array if it exists
+          if (typeof myAnswers !== 'undefined' && typeof index !== 'undefined') {
+            myAnswers[index] = value;
+          }
+
+          // Send progress to partner
+          if (typeof sendProgress === 'function') {
+            sendProgress();
+          }
+        });
+
+        // Add keyboard navigation
+        newInput.addEventListener('keydown', function(e) {
+          const allInputs = myCodeElement.querySelectorAll('.blank-input');
+          const currentIndex = Array.from(allInputs).indexOf(e.target);
+
+          if (e.key === 'Tab') {
+            e.preventDefault();
+            const nextIndex = (currentIndex + 1) % allInputs.length;
+            allInputs[nextIndex].focus();
+          } else if (e.key === 'Enter') {
+            e.preventDefault();
+            if (typeof submitMyAnswer === 'function') {
+              submitMyAnswer();
+            }
+          }
+        });
+      });
+    }
+
+    // Re-run monitorInputs whenever code is displayed
+    const originalDisplayCoopCode = window.displayCoopCode;
+    if (typeof originalDisplayCoopCode === 'function') {
+      window.displayCoopCode = function(question) {
+        originalDisplayCoopCode(question);
+        
+        // Wait for DOM to update, then monitor inputs
+        setTimeout(() => {
+          monitorInputs();
+          
+          // Reset progress bars
+          updateProgressBar(1, 0);
+          updateProgressBar(2, 0);
+        }, 100);
+      };
+    }
+
+    // Debug: Log when inputs are created
+    const observer = new MutationObserver(function(mutations) {
+      mutations.forEach(function(mutation) {
+        mutation.addedNodes.forEach(function(node) {
+          if (node.nodeType === 1) { // Element node
+            const inputs = node.querySelectorAll ? node.querySelectorAll('.blank-input') : [];
+            if (inputs.length > 0) {
+              console.log(`Found ${inputs.length} blank inputs`);
+              setTimeout(monitorInputs, 50);
+            }
+          }
+        });
+      });
+    });
+
+    // Observe the code display areas
+    setTimeout(() => {
+      const player1Code = document.getElementById('player1Code');
+      const player2Code = document.getElementById('player2Code');
+      
+      if (player1Code) {
+        observer.observe(player1Code, { childList: true, subtree: true });
+      }
+      if (player2Code) {
+        observer.observe(player2Code, { childList: true, subtree: true });
+      }
+    }, 1000);
+  </script>
+</body>
+</html>

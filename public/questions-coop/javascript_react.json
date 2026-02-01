@@ -1,0 +1,50 @@
+[
+  {
+    "id": 1,
+    "type": "frontend_backend",
+    "category": "JavaScript + React",
+    "description": "Create a React counter component where Player 1 handles the UI, and Player 2 handles the increment logic. \nHints: Import useState from React. State variables come in [value, setter] format. Use the button's onClick to call the handler function that updates state. Use the setter function to increment the count by 1.",
+    "player1": {
+      "role": "Frontend (React Component)",
+      "code": "import React, { ___ } from 'react';\n\nfunction Counter() {\n  const [count, ___] = ___(0);\n\n  return (\n    <div>\n      <h1>Count: {___}</h1>\n      <button onClick={handleIncrement}>___</button>\n    </div>\n  );\n}\n\nexport default Counter;",
+      "blanks": ["useState", "setCount", "useState", "count", "Increment"]
+    },
+    "player2": {
+      "role": "Backend (Event Handler)",
+      "code": "// Player 1's completed component above\n\nfunction Counter() {\n  const [count, setCount] = useState(0);\n\n  const handleIncrement = () => {\n    ___(___ + ___);\n  };\n\n  return (\n    <div>\n      <h1>Count: {count}</h1>\n      <button onClick={___}>Increment</button>\n    </div>\n  );\n}",
+      "blanks": ["setCount", "count", "1", "handleIncrement"]
+    }
+  },
+  {
+    "id": 2,
+    "type": "frontend_backend",
+    "category": "JavaScript + React",
+    "description": "Build a login form with controlled inputs. Player 1 handles the form UI, Player 2 implements the form submission. \nHints: Controlled inputs use value={stateVar} and onChange={setStateVar}. Prevent default form submission using e.preventDefault(). Use JSON.stringify() to send object data in fetch body. Remember to specify the HTTP method (POST) in fetch.",
+    "player1": {
+      "role": "Frontend (Form UI)",
+      "code": "function LoginForm() {\n  const [username, setUsername] = ___('');\n  const [password, ___] = useState('');\n\n  return (\n    <___ onSubmit={handleSubmit}>\n      <input\n        type=\"___\"\n        value={___}\n        onChange={(e) => ___(e.target.value)}\n      />\n      <input\n        type=\"password\"\n        value={password}\n        onChange={(e) => setPassword(e.target.value)}\n      />\n      <button type=\"submit\">Login</button>\n    </___>\n  );\n}",
+      "blanks": ["useState", "setPassword", "form", "text", "username", "setUsername"]
+    },
+    "player2": {
+      "role": "Backend (Form Handler)",
+      "code": "function LoginForm() {\n  const [username, setUsername] = useState('');\n  const [password, setPassword] = useState('');\n\n  const handleSubmit = (___) => {\n    ___.preventDefault();\n    \n    console.log('Username:', ___);\n    console.log('Password:', ___);\n    \n    // Send to API\n    fetch('/api/login', {\n      method: '___',\n      body: JSON.___({ username, password })\n    });\n  };\n\n  return (\n    <form onSubmit={___}>...</form>\n  );\n}",
+      "blanks": ["e", "e", "username", "password", "POST", "stringify", "handleSubmit"]
+    }
+  },
+  {
+    "id": 3,
+    "type": "frontend_backend",
+    "category": "JavaScript + React",
+    "description": "Create a todo list app where Player 1 handles the UI and Player 2 handles the add logic. \nHints: Use useState for todos array and input value. Check input.trim() !== '' before adding. Use Date.now() for unique ids. Update state immutably with setTodos([...todos, newTodo]). Reset input with the setter function after adding.",
+    "player1": {
+      "role": "Frontend (Todo List UI)",
+      "code": "function TodoList() {\n  const [todos, setTodos] = ___([]);\n  const [input, ___] = useState('');\n\n  return (\n    <div>\n      <input\n        value={___}\n        onChange={(e) => setInput(___)}\n      />\n      <button onClick={___}>Add Todo</button>\n      <ul>\n        {todos.___(todo => (\n          <li key={todo.id}>{todo.___}</li>\n        ))}\n      </ul>\n    </div>\n  );\n}",
+      "blanks": ["useState", "setInput", "input", "e.target.value", "addTodo", "map", "text"]
+    },
+    "player2": {
+      "role": "Backend (Add Todo Logic)",
+      "code": "function TodoList() {\n  const [todos, setTodos] = useState([]);\n  const [input, setInput] = useState('');\n\n  const addTodo = () => {\n    if (input.___() === '') return;\n    \n    const newTodo = {\n      id: Date.___(),\n      text: ___\n    };\n    \n    setTodos([...___, ___]);\n    ___('');\n  };\n\n  return (\n    <div>...</div>\n  );\n}",
+      "blanks": ["trim", "now", "input", "todos", "newTodo", "setInput"]
+    }
+  }
+]

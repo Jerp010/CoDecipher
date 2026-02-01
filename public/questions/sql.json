@@ -1,0 +1,142 @@
+[
+  {
+    "id": 1,
+    "topic": "Basic Queries",
+    "question": "Retrieve all columns from the Customers table.",
+    "code_snippet": "___ ___ FROM ___;",
+    "answers": ["SELECT", "*", "Customers"]
+  },
+  {
+    "id": 2,
+    "topic": "Filtering",
+    "question": "Show only users older than 18.",
+    "code_snippet": "SELECT * FROM Users\n___ age ___ 18;",
+    "answers": ["WHERE", ">", "18"]
+  },
+  {
+    "id": 3,
+    "topic": "Modifying Data",
+    "question": "Update a user's email using their ID.",
+    "code_snippet": "___ Employees\n___ email = 'new@test.com'\nWHERE id ___ 5;",
+    "answers": ["UPDATE", "SET", "="]
+  },
+  {
+    "id": 4,
+    "topic": "Modifying Data",
+    "question": "Insert a new product into the Products table.",
+    "code_snippet": "___ INTO Products (___, ___)\n___ ('Laptop', 999);",
+    "answers": ["INSERT", "name", "price", "VALUES"]
+  },
+  {
+    "id": 5,
+    "topic": "Sorting",
+    "question": "Sort items by price from highest to lowest.",
+    "code_snippet": "SELECT * FROM Items\n___ BY price ___;",
+    "answers": ["ORDER", "DESC"]
+  },
+  {
+    "id": 6,
+    "topic": "Joins",
+    "question": "Join Orders and Users using their related IDs.",
+    "code_snippet": "SELECT Orders.id, Users.name\nFROM Orders\n___ JOIN Users\n___ Orders.user_id ___ Users.id;",
+    "answers": ["INNER", "ON", "="]
+  },
+  {
+    "id": 7,
+    "topic": "Aggregates",
+    "question": "Count all rows in the Logs table.",
+    "code_snippet": "SELECT ___(___) FROM ___;",
+    "answers": ["COUNT", "*", "Logs"]
+  },
+  {
+    "id": 8,
+    "topic": "DDL (Structure)",
+    "question": "Create a table for storing students.",
+    "code_snippet": "___ TABLE Students (\n  id ___,\n  name ___(50)\n);",
+    "answers": ["CREATE", "INT", "VARCHAR"]
+  },
+  {
+    "id": 9,
+    "topic": "Grouping",
+    "question": "Group products by category.",
+    "code_snippet": "SELECT category, COUNT(*)\nFROM Products\n___ BY ___;",
+    "answers": ["GROUP", "category"]
+  },
+  {
+    "id": 10,
+    "topic": "Filtering",
+    "question": "Find users whose names start with 'A'.",
+    "code_snippet": "SELECT * FROM Users\nWHERE name ___ '___%';",
+    "answers": ["LIKE", "A"]
+  },
+  {
+    "id": 11,
+    "topic": "Modifying Data",
+    "question": "Delete a customer record safely.",
+    "code_snippet": "___ FROM Customers\n___ id ___ 10;",
+    "answers": ["DELETE", "WHERE", "="]
+  },
+  {
+    "id": 12,
+    "topic": "Constraints",
+    "question": "Ensure each order has a unique identifier.",
+    "code_snippet": "CREATE TABLE Orders (\n  id INT ___ ___,\n  date DATE\n);",
+    "answers": ["PRIMARY", "KEY"]
+  },
+  {
+    "id": 13,
+    "topic": "Basic Queries",
+    "question": "Remove duplicate countries from users.",
+    "code_snippet": "SELECT ___ country FROM ___;",
+    "answers": ["DISTINCT", "Users"]
+  },
+  {
+    "id": 14,
+    "topic": "Filtering",
+    "question": "Select items priced between 10 and 20.",
+    "code_snippet": "SELECT * FROM Items\nWHERE price ___ 10 ___ 20;",
+    "answers": ["BETWEEN", "AND"]
+  },
+  {
+    "id": 15,
+    "topic": "Aliases",
+    "question": "Rename the calculated column as Total.",
+    "code_snippet": "SELECT price + tax ___ ___\nFROM Orders;",
+    "answers": ["AS", "Total"]
+  },
+  {
+    "id": 16,
+    "topic": "Null Handling",
+    "question": "Find contacts without phone numbers.",
+    "code_snippet": "SELECT * FROM Contacts\nWHERE phone ___ ___;",
+    "answers": ["IS", "NULL"]
+  },
+  {
+    "id": 17,
+    "topic": "Filtering Groups",
+    "question": "Filter grouped results with more than 5 items.",
+    "code_snippet": "SELECT category, COUNT(*)\nFROM Items\nGROUP BY category\n___ COUNT(*) ___ 5;",
+    "answers": ["HAVING", ">"]
+  },
+  {
+    "id": 18,
+    "topic": "Set Operations",
+    "question": "Match a value against a predefined list.",
+    "code_snippet": "SELECT * FROM Users\nWHERE country ___ ('USA', 'Canada', 'Mexico');",
+    "answers": ["IN"]
+  },
+  {
+    "id": 19,
+    "topic": "DDL (Structure)",
+    "question": "Remove a table completely from the database.",
+    "code_snippet": "___ TABLE ___;",
+    "answers": ["DROP", "OldLogs"]
+  },
+  {
+    "id": 20,
+    "topic": "Pagination",
+    "question": "Return only the top 5 highest scores.",
+    "code_snippet": "SELECT * FROM HighScores\nORDER BY score ___\n___ 5;",
+    "answers": ["DESC", "LIMIT"]
+  }
+]

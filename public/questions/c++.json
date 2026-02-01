@@ -1,0 +1,145 @@
+[
+  {
+    "id": 1,
+    "topic": "Variables",
+    "question": "Declare an integer variable named score and set it to 10.",
+    "code_snippet": "___ ___ = 10;",
+    "answers": ["int", "score"]
+  },
+  {
+    "id": 2,
+    "topic": "Data Types",
+    "question": "Declare a floating-point variable named average.",
+    "code_snippet": "___ ___;",
+    "answers": ["float", "average"]
+  },
+  {
+    "id": 3,
+    "topic": "Input/Output",
+    "question": "Print the text \"Welcome\" to the console.",
+    "code_snippet": "___ << \"Welcome\" << ___;",
+    "answers": ["std::cout", "std::endl"]
+  },
+  {
+    "id": 4,
+    "topic": "Operators",
+    "question": "Increase the value of x by 1.",
+    "code_snippet": "x___;",
+    "answers": ["++"]
+  },
+  {
+    "id": 5,
+    "topic": "Conditional Statements",
+    "question": "Check if number is greater than 0.",
+    "code_snippet": "if(number ___ ___) {\n}",
+    "answers": [">", "0"]
+  },
+
+  {
+    "id": 6,
+    "topic": "Loops",
+    "question": "Write a for-loop that runs from 0 to 4.",
+    "code_snippet": "for(int i = 0; i ___ ___; i++) {\n}",
+    "answers": ["<", "5"]
+  },
+  {
+    "id": 7,
+    "topic": "Arrays",
+    "question": "Declare an integer array named numbers with size 3.",
+    "code_snippet": "int ___[___];",
+    "answers": ["numbers", "3"]
+  },
+  {
+    "id": 8,
+    "topic": "Functions",
+    "question": "Define a function named greet that returns no value.",
+    "code_snippet": "___ ___() {\n}",
+    "answers": ["void", "greet"]
+  },
+  {
+    "id": 9,
+    "topic": "Functions",
+    "question": "Create a function add that takes two integers.",
+    "code_snippet": "int add(int ___, int ___) {\n  return a + b;\n}",
+    "answers": ["a", "b"]
+  },
+  {
+    "id": 10,
+    "topic": "Loops",
+    "question": "Write a while loop that runs while x is less than 10.",
+    "code_snippet": "while(x ___ ___) {\n}",
+    "answers": ["<", "10"]
+  },
+
+  {
+    "id": 11,
+    "topic": "Strings",
+    "question": "Declare a string variable named name.",
+    "code_snippet": "___ ___;",
+    "answers": ["std::string", "name"]
+  },
+  {
+    "id": 12,
+    "topic": "Vectors",
+    "question": "Declare a vector named values that stores integers.",
+    "code_snippet": "std::vector<int> ___;",
+    "answers": ["values"]
+  },
+  {
+    "id": 13,
+    "topic": "Switch Case",
+    "question": "Create a switch statement that checks the variable choice.",
+    "code_snippet": "switch(___) {\n}",
+    "answers": ["choice"]
+  },
+  {
+    "id": 14,
+    "topic": "Const",
+    "question": "Declare a constant integer named LIMIT with value 50.",
+    "code_snippet": "___ int ___ = ___;",
+    "answers": ["const", "LIMIT", "50"]
+  },
+  {
+    "id": 15,
+    "topic": "Input",
+    "question": "Read a value from the user into variable age.",
+    "code_snippet": "___ >> ___;",
+    "answers": ["std::cin", "age"]
+  },
+
+  {
+    "id": 16,
+    "topic": "Pointers",
+    "question": "Declare a pointer ptr that points to variable x.",
+    "code_snippet": "int* ___ = &___;",
+    "answers": ["ptr", "x"]
+  },
+  {
+    "id": 17,
+    "topic": "Dynamic Memory",
+    "question": "Allocate memory for an integer and store it in pointer p.",
+    "code_snippet": "int* ___ = ___ int;",
+    "answers": ["p", "new"]
+  },
+  {
+    "id": 18,
+    "topic": "Classes",
+    "question": "Define a class named Box with a public integer variable size.",
+    "code_snippet": "class ___ {\npublic:\n  int ___;\n};",
+    "answers": ["Box", "size"]
+  },
+  {
+    "id": 19,
+    "topic": "Constructors",
+    "question": "Write a constructor for the Box class.",
+    "code_snippet": "___() {\n}",
+    "answers": ["Box"]
+  },
+  {
+    "id": 20,
+    "topic": "Namespaces",
+    "question": "Use the standard namespace in C++.",
+    "code_snippet": "using namespace ___;",
+    "answers": ["std"]
+  }
+]

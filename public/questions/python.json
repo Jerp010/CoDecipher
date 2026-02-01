@@ -1,0 +1,142 @@
+[
+  {
+    "id": 1,
+    "topic": "Variables",
+    "question": "Assign 10 to a variable named x.",
+    "code_snippet": "___ = ___",
+    "answers": ["x", "10"]
+  },
+  {
+    "id": 2,
+    "topic": "Input/Output",
+    "question": "Print 'Hello World'.",
+    "code_snippet": "___('___')",
+    "answers": ["print", "Hello World"]
+  },
+  {
+    "id": 3,
+    "topic": "Conditional Statements",
+    "question": "Check if x is greater than 5.",
+    "code_snippet": "if ___ ___ 5:\n    print('Yes')",
+    "answers": ["x", ">"]
+  },
+  {
+    "id": 4,
+    "topic": "Loops",
+    "question": "Print numbers 0 to 4 using a for-loop.",
+    "code_snippet": "for ___ in ___(___):\n    print(___)",
+    "answers": ["i", "range", "5", "i"]
+  },
+  {
+    "id": 5,
+    "topic": "Functions",
+    "question": "Define a function that returns the sum of a and b.",
+    "code_snippet": "def ___(___, ___):\n    return ___ + ___",
+    "answers": ["add", "a", "b", "a", "b"]
+  },
+  {
+    "id": 6,
+    "topic": "Lists",
+    "question": "Create a list with numbers 1 to 5.",
+    "code_snippet": "___ = [___, ___, ___, ___, ___]",
+    "answers": ["numbers", "1", "2", "3", "4", "5"]
+  },
+  {
+    "id": 7,
+    "topic": "Dictionaries",
+    "question": "Create a dictionary with key 'name' and value 'Alice'.",
+    "code_snippet": "___ = {'___': '___'}",
+    "answers": ["person", "name", "Alice"]
+  },
+  {
+    "id": 8,
+    "topic": "Tuples",
+    "question": "Create a tuple containing 1, 2, 3.",
+    "code_snippet": "___ = (___, ___, ___)",
+    "answers": ["t", "1", "2", "3"]
+  },
+  {
+    "id": 9,
+    "topic": "Sets",
+    "question": "Create a set with elements 1, 2, 3.",
+    "code_snippet": "___ = {___, ___, ___}",
+    "answers": ["s", "1", "2", "3"]
+  },
+  {
+    "id": 10,
+    "topic": "String Formatting",
+    "question": "Print 'Hello Alice' using f-string.",
+    "code_snippet": "name = 'Alice'\nprint(___ 'Hello ___')",
+    "answers": ["f", "{name}"]
+  },
+  {
+    "id": 11,
+    "topic": "File I/O",
+    "question": "Open a file 'data.txt' for reading.",
+    "code_snippet": "with open('___', '___') as f:\n    content = f.read()",
+    "answers": ["data.txt", "r"]
+  },
+  {
+    "id": 12,
+    "topic": "List Comprehension",
+    "question": "Create a list of squares from 0 to 4.",
+    "code_snippet": "squares = [___**2 for ___ in ___(___)]",
+    "answers": ["i", "i", "range", "5"]
+  },
+  {
+    "id": 13,
+    "topic": "Modules",
+    "question": "Import the math module.",
+    "code_snippet": "___ ___",
+    "answers": ["import math"]
+  },
+  {
+    "id": 14,
+    "topic": "Exception Handling",
+    "question": "Catch a ZeroDivisionError.",
+    "code_snippet": "try:\n    x = 1/0\nexcept ___ as ___:\n    print('Error')",
+    "answers": ["ZeroDivisionError", "e"]
+  },
+  {
+    "id": 15,
+    "topic": "Boolean",
+    "question": "Set a variable flag to True.",
+    "code_snippet": "___ = ___",
+    "answers": ["flag", "True"]
+  },
+  {
+    "id": 16,
+    "topic": "Lambda Functions",
+    "question": "Create a lambda to double a number.",
+    "code_snippet": "double = ___ ___: ___ * ___",
+    "answers": ["lambda", "x", "x", "2"]
+  },
+  {
+    "id": 17,
+    "topic": "Map Function",
+    "question": "Use map to double a list of numbers.",
+    "code_snippet": "numbers = [1,2,3]\ndoubled = list(___(lambda x: x*2, ___))",
+    "answers": ["map", "numbers"]
+  },
+  {
+    "id": 18,
+    "topic": "Classes",
+    "question": "Define a class Person with a name attribute.",
+    "code_snippet": "class ___:\n    def __init__(self, ___):\n        self.___ = ___",
+    "answers": ["Person", "name", "name", "name"]
+  },
+  {
+    "id": 19,
+    "topic": "Inheritance",
+    "question": "Create a class Student inheriting from Person.",
+    "code_snippet": "class ___(___):\n    pass",
+    "answers": ["Student", "Person"]
+  },
+  {
+    "id": 20,
+    "topic": "Decorators",
+    "question": "Define a simple decorator that prints 'Before' before calling the function.",
+    "code_snippet": "def decorator(func):\n    def wrapper():\n        print('___')\n        ___()\n    return ___",
+    "answers": ["Before", "func", "wrapper"]
+  } 
+]

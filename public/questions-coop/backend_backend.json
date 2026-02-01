@@ -1,0 +1,77 @@
+[
+  {
+    "id": 1,
+    "type": "both_backends",
+    "category": "Backend to Backend",
+    "description": "Complete a REST API login endpoint with authentication using JWT.\nHints: Access POST data via req.body. Find a user using User.findOne({ username }). Compare the password using bcrypt.compare(). Return 404 if user not found. Generate a token using jwt.sign() with a secret from environment variables (JWT_SECRET) and expiration time ('24h'). Return the token in the response.",
+    "shared_code": "const express = require('express');\nconst jwt = require('jsonwebtoken');\nconst bcrypt = require('bcrypt');\n\napp.post('/api/login', async (req, res) => {\n  const { username, password } = req.P1_BLANK;\n  \n  // Find user\n  const user = await User.P1_BLANK({ username });\n  if (!user) {\n    return res.status(P2_BLANK).json({ error: 'User not found' });\n  }\n  \n  // Check password\n  const isValid = await bcrypt.P1_BLANK(password, user.password);\n  if (!P2_BLANK) {\n    return res.status(401).json({ error: 'P2_BLANK password' });\n  }\n  \n  // Generate token\n  const token = jwt.P1_BLANK(\n    { userId: user.id },\n    process.env.P2_BLANK,\n    { expiresIn: 'P2_BLANK' }\n  );\n  \n  res.json({ P1_BLANK });\n});",
+    "player1": {
+      "blanks_positions": ["P1_BLANK"],
+      "answers": ["body", "findOne", "compare", "sign", "token"]
+    },
+    "player2": {
+      "blanks_positions": ["P2_BLANK"],
+      "answers": ["404", "isValid", "Invalid", "JWT_SECRET", "24h"]
+    }
+  },
+  {
+    "id": 2,
+    "type": "both_backends",
+    "category": "Backend to Backend",
+    "description": "Build a database query function with optional filters and pagination.\nHints: Use default page = 1 and limit = 10. Check if filters.category exists to filter by category. Use $gte and $lte for price range filtering. Calculate skip = (page - 1) * limit. Execute the query with Product.find(query).skip(skip).limit(limit).sort({ createdAt: -1 }).",
+    "shared_code": "async function getProducts(filters) {\n  const { category, minPrice, maxPrice, page = P2_BLANK, limit = P2_BLANK } = filters;\n  \n  // Build query\n  const query = {};\n  \n  if (P1_BLANK) {\n    query.category = category;\n  }\n  \n  if (minPrice || maxPrice) {\n    query.price = {};\n    if (P1_BLANK) query.price.$gte = P2_BLANK;\n    if (maxPrice) query.price.P1_BLANK = maxPrice;\n  }\n  \n  // Calculate pagination\n  const skip = (page - P2_BLANK) * limit;\n  \n  // Execute query\n  const products = await Product\n    .P1_BLANK(query)\n    .skip(P2_BLANK)\n    .limit(limit)\n    .sort({ createdAt: P1_BLANK });\n  \n  return products;\n}",
+    "player1": {
+      "blanks_positions": ["P1_BLANK"],
+      "answers": ["category", "minPrice", "$lte", "find", "-1"]
+    },
+    "player2": {
+      "blanks_positions": ["P2_BLANK"],
+      "answers": ["1", "10", "minPrice", "1", "skip"]
+    }
+  },
+  {
+    "id": 3,
+    "type": "both_backends",
+    "category": "Backend to Backend",
+    "description": "Implement file upload with validation using Multer.\nHints: Use multer.diskStorage() to configure storage. Set destination folder as 'uploads/'. Generate unique filename using Date.now() and original file name. Allow only specific file types: 'image/jpeg', 'image/png', 'image/gif'. Use includes() to check allowed types. Pass storage and fileFilter to multer({ storage, fileFilter }).",
+    "shared_code": "const multer = require('multer');\nconst path = require('path');\n\nconst storage = multer.P1_BLANK({\n  destination: (req, file, cb) => {\n    cb(P2_BLANK, 'uploads/');\n  },\n  filename: (req, file, cb) => {\n    const uniqueName = Date.P1_BLANK() + '-' + file.P2_BLANK;\n    cb(null, P1_BLANK);\n  }\n});\n\nconst fileFilter = (req, file, cb) => {\n  const allowedTypes = ['image/P2_BLANK', 'image/png', 'image/P2_BLANK'];\n  \n  if (allowedTypes.P1_BLANK(file.mimetype)) {\n    cb(null, P1_BLANK);\n  } else {\n    cb(new Error('Invalid file type'), P2_BLANK);\n  }\n};\n\nconst upload = multer({ P2_BLANK, fileFilter });",
+    "player1": {
+      "blanks_positions": ["P1_BLANK"],
+      "answers": ["diskStorage", "now", "uniqueName", "includes", "true"]
+    },
+    "player2": {
+      "blanks_positions": ["P2_BLANK"],
+      "answers": ["null", "originalname", "jpeg", "gif", "false", "storage"]
+    }
+  },
+  {
+    "id": 4,
+    "type": "both_backends",
+    "category": "Backend to Backend",
+    "description": "Create middleware for rate limiting requests per IP.\nHints: Identify IP from req.ip. Use Date.now() for timestamps. Define windowMs = 15 * 60 * 1000 and maxRequests = 100. Track count and resetTime per IP. Reset count if window expired. Respond with status 429 if limit exceeded. Call next() otherwise.",
+    "shared_code": "const rateLimit = {};\n\nfunction rateLimiter(req, res, next) {\n  const ip = req.P1_BLANK;\n  const now = Date.P2_BLANK();\n  const windowMs = P2_BLANK * 60 * 1000; // 15 minutes\n  const maxRequests = P2_BLANK;\n  \n  if (!rateLimit[P1_BLANK]) {\n    rateLimit[ip] = {\n      count: P2_BLANK,\n      resetTime: now + P1_BLANK\n    };\n  }\n  \n  const record = rateLimit[P1_BLANK];\n  \n  if (now > record.P2_BLANK) {\n    // Reset the window\n    record.P1_BLANK = 1;\n    record.resetTime = P1_BLANK + windowMs;\n  } else {\n    record.count++;\n  }\n  \n  if (record.count > P2_BLANK) {\n    return res.status(P1_BLANK).json({ error: 'Too many requests' });\n  }\n  \n  next();\n}",
+    "player1": {
+      "blanks_positions": ["P1_BLANK"],
+      "answers": ["ip", "ip", "windowMs", "ip", "count", "now", "429"]
+    },
+    "player2": {
+      "blanks_positions": ["P2_BLANK"],
+      "answers": ["now", "15", "100", "1", "resetTime", "maxRequests"]
+    }
+  },
+  {
+    "id": 5,
+    "type": "both_backends",
+    "category": "Backend to Backend",
+    "description": "Build a WebSocket real-time chat handler.\nHints: Initialize rooms as a Map(). Listen for 'connection' events. Use socket.id to identify users. Handle 'join_room' events by joining the room and creating it if not exists. Store socket IDs in the room array. Emit 'joined' confirmation. Handle 'send_message' by emitting to a room. Handle 'disconnect' to log user leaving.",
+    "shared_code": "const io = require('socket.io')(server);\nconst rooms = new P1_BLANK();\n\nio.on('P2_BLANK', (socket) => {\n  console.log('User connected:', socket.P1_BLANK);\n  \n  socket.on('P2_BLANK', (roomName) => {\n    socket.P1_BLANK(roomName);\n    \n    if (!rooms.P2_BLANK(roomName)) {\n      rooms.P1_BLANK(roomName, []);\n    }\n    \n    rooms.get(roomName).P2_BLANK(socket.id);\n    \n    socket.P1_BLANK('joined', { room: roomName });\n  });\n  \n  socket.on('P2_BLANK', (data) => {\n    socket.to(data.P1_BLANK).emit('message', {\n      user: socket.id,\n      text: data.P2_BLANK\n    });\n  });\n  \n  socket.on('P2_BLANK', () => {\n    console.log('User disconnected:', socket.id);\n  });\n});",
+    "player1": {
+      "blanks_positions": ["P1_BLANK"],
+      "answers": ["Map", "id", "join", "set", "emit", "room"]
+    },
+    "player2": {
+      "blanks_positions": ["P2_BLANK"],
+      "answers": ["connection", "join_room", "has", "push", "send_message", "text", "disconnect"]
+    }
+  }
+]

@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CoDecipher - Select Learning Mode</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #3e1257 0%, #5c1069 50%, #3e1257 100%);
+      min-height: 100vh;
+      overflow-x: hidden;
+      color: white;
+    }
+
+    /* Animated Particle Background */
+    .particle-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 1;
+    }
+
+    .particle {
+      position: absolute;
+      width: 4px;
+      height: 4px;
+      background: rgba(168, 85, 247, 0.3);
+      border-radius: 50%;
+      animation: float-up 15s infinite ease-in-out;
+    }
+
+    @keyframes float-up {
+      0%, 100% {
+        transform: translateY(0) translateX(0);
+        opacity: 0;
+      }
+      10% {
+        opacity: 1;
+      }
+      90% {
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(-100vh) translateX(50px);
+        opacity: 0;
+      }
+    }
+
+    /* Masked Code Snippets Background */
+    .code-snippet-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      overflow: hidden;
+      opacity: 0.1;
+      z-index: 1;
+    }
+
+    .code-snippet {
+      position: absolute;
+      font-family: 'Courier New', monospace;
+      font-size: 24px;
+      font-weight: bold;
+      color: #f4e04d;
+      animation: float-code 12s infinite ease-in-out;
+    }
+
+    @keyframes float-code {
+      0%, 100% {
+        transform: translateY(0);
+        opacity: 0.1;
+      }
+      50% {
+        transform: translateY(-30px);
+        opacity: 0.3;
+      }
+    }
+
+    /* Main Container */
+    .main-container {
+      position: relative;
+      z-index: 10;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 80px 20px;
+    }
+
+    .content-wrapper {
+      max-width: 1000px;
+      width: 100%;
+    }
+
+    /* Title Section */
+    .title-section {
+      text-align: center;
+      margin-bottom: 60px;
+      animation: slide-down 0.8s ease-out;
+    }
+
+    @keyframes slide-down {
+      from {
+        transform: translateY(-50px);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    .main-title {
+      font-family: 'Courier New', monospace;
+      font-size: clamp(2.5rem, 6vw, 4rem);
+      font-weight: bold;
+      color: #f4e04d;
+      text-shadow: 3px 3px 0px rgba(0, 0, 0, 0.3);
+      margin-bottom: 20px;
+      letter-spacing: 2px;
+    }
+
+    .title-underline {
+      width: 128px;
+      height: 4px;
+      background: #f4e04d;
+      margin: 0 auto;
+      border-radius: 2px;
+      animation: expand-line 0.6s ease-out 0.3s backwards;
+    }
+
+    @keyframes expand-line {
+      from {
+        width: 0;
+      }
+      to {
+        width: 128px;
+      }
+    }
+
+    /* Mode Cards Container */
+    .modes-container {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+      margin-bottom: 32px;
+    }
+
+    /* Individual Mode Card */
+    .mode-card {
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      padding: 32px;
+      background: rgba(74, 34, 105, 0.7);
+      backdrop-filter: blur(10px);
+      border: 2px solid rgba(255, 255, 255, 0.2);
+      border-radius: 16px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      overflow: hidden;
+      animation: slide-in 0.6s ease-out backwards;
+      text-decoration: none;
+      color: white;
+    }
+
+    .mode-card:nth-child(1) {
+      animation-delay: 0.2s;
+    }
+
+    .mode-card:nth-child(2) {
+      animation-delay: 0.3s;
+    }
+
+    .mode-card:nth-child(3) {
+      animation-delay: 0.4s;
+    }
+
+    @keyframes slide-in {
+      from {
+        transform: translateX(-100px);
+        opacity: 0;
+      }
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+
+    .mode-card:hover {
+      transform: scale(1.03) translateX(10px);
+      border-color: rgba(244, 224, 77, 0.6);
+    }
+
+    /* Gradient Background on Hover */
+    .mode-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      pointer-events: none;
+    }
+
+    .mode-card.solo::before {
+      background: linear-gradient(to right, rgba(168, 85, 247, 0.2), rgba(147, 51, 234, 0.2));
+    }
+
+    .mode-card.coop::before {
+      background: linear-gradient(to right, rgba(59, 130, 246, 0.2), rgba(37, 99, 235, 0.2));
+    }
+
+    .mode-card.battle::before {
+      background: linear-gradient(to right, rgba(239, 68, 68, 0.2), rgba(220, 38, 38, 0.2));
+    }
+
+    .mode-card:hover::before {
+      opacity: 1;
+    }
+
+    /* Mask Pattern Background */
+    .mask-pattern {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      opacity: 0.05;
+      pointer-events: none;
+      display: grid;
+      grid-template-columns: repeat(8, 1fr);
+      grid-template-rows: repeat(4, 1fr);
+      gap: 8px;
+      padding: 16px;
+    }
+
+    .mask-pattern-cell {
+      background: white;
+      border-radius: 2px;
+      animation: pulse-cell 2s infinite;
+    }
+
+    @keyframes pulse-cell {
+      0%, 100% {
+        opacity: 0.3;
+      }
+      50% {
+        opacity: 0;
+      }
+    }
+
+    /* Icon */
+    .mode-icon {
+      font-size: clamp(3rem, 8vw, 5rem);
+      flex-shrink: 0;
+      position: relative;
+      z-index: 10;
+      transition: transform 0.5s ease;
+    }
+
+    .mode-card:hover .mode-icon {
+      animation: wiggle 0.5s ease;
+    }
+
+    @keyframes wiggle {
+      0%, 100% {
+        transform: rotate(0deg);
+      }
+      25% {
+        transform: rotate(-10deg);
+      }
+      75% {
+        transform: rotate(10deg);
+      }
+    }
+
+    /* Content */
+    .mode-content {
+      flex: 1;
+      position: relative;
+      z-index: 10;
+    }
+
+    .mode-header {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+    }
+
+    .mode-title {
+      font-family: 'Courier New', monospace;
+      font-size: clamp(2rem, 5vw, 3rem);
+      font-weight: bold;
+      color: white;
+    }
+
+    .mode-mask {
+      padding: 6px 12px;
+      background: rgba(88, 28, 135, 0.5);
+      border: 1px solid rgba(168, 85, 247, 0.3);
+      border-radius: 8px;
+      font-family: 'Courier New', monospace;
+      font-size: 0.75rem;
+      color: rgba(216, 180, 254, 1);
+      animation: fade-in 0.5s ease-out backwards;
+      animation-delay: 0.8s;
+    }
+
+    @keyframes fade-in {
+      from {
+        opacity: 0;
+        transform: scale(0);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    .mode-description {
+      font-size: clamp(0.9rem, 2vw, 1.125rem);
+      color: rgba(216, 180, 254, 1);
+      line-height: 1.6;
+    }
+
+    /* Arrow */
+    .mode-arrow {
+      font-size: 2rem;
+      color: #f4e04d;
+      flex-shrink: 0;
+      position: relative;
+      z-index: 10;
+      animation: arrow-float 1.5s infinite ease-in-out;
+    }
+
+    @keyframes arrow-float {
+      0%, 100% {
+        transform: translateX(0);
+      }
+      50% {
+        transform: translateX(5px);
+      }
+    }
+
+    /* Scan Line Effect */
+    .scan-line {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(to right, transparent, rgba(244, 224, 77, 0.5), transparent);
+      animation: scan 3s infinite;
+      pointer-events: none;
+    }
+
+    .mode-card:nth-child(1) .scan-line {
+      animation-delay: 0s;
+    }
+
+    .mode-card:nth-child(2) .scan-line {
+      animation-delay: 0.5s;
+    }
+
+    .mode-card:nth-child(3) .scan-line {
+      animation-delay: 1s;
+    }
+
+    @keyframes scan {
+      0%, 100% {
+        transform: translateY(0);
+        opacity: 0;
+      }
+      10% {
+        opacity: 1;
+      }
+      90% {
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(200px);
+        opacity: 0;
+      }
+    }
+
+    /* Bottom Hint */
+    .bottom-hint {
+      text-align: center;
+      margin-top: 32px;
+      color: rgba(192, 132, 252, 0.6);
+      font-size: 0.875rem;
+      animation: fade-in 0.5s ease-out backwards;
+      animation-delay: 1s;
+    }
+
+    .bottom-hint .highlight {
+      color: #f4e04d;
+      font-weight: bold;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      .mode-card {
+        flex-direction: column;
+        text-align: center;
+        padding: 24px;
+        gap: 16px;
+      }
+
+      .mode-header {
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .mode-arrow {
+        display: none;
+      }
+
+      .main-container {
+        padding: 40px 16px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Animated Particles -->
+  <div class="particle-container" id="particles"></div>
+
+  <!-- Masked Code Snippets -->
+  <div class="code-snippet-container" id="codeSnippets"></div>
+
+  <!-- Main Content -->
+  <div class="main-container">
+    <div class="content-wrapper">
+      
+      <!-- Title Section -->
+      <div class="title-section">
+        <h1 class="main-title">Select Learning Mode</h1>
+        <div class="title-underline"></div>
+      </div>
+
+      <!-- Mode Cards -->
+      <div class="modes-container">
+        
+        <!-- SOLO Mode -->
+        <a href="solo.html" class="mode-card solo">
+          <!-- Mask Pattern Background -->
+          <div class="mask-pattern">
+            <div class="mask-pattern-cell" style="animation-delay: 0s;"></div>
+            <div class="mask-pattern-cell" style="animation-delay: 0.05s;"></div>
+            <div class="mask-pattern-cell" style="animation-delay: 0.1s;"></div>
+            <div class="mask-pattern-cell" style="animation-delay: 0.15s;"></div>
+            <div class="mask-pattern-cell" style="animation-delay: 0.2s;"></div>
+            <div class="mask-pattern-cell" style="animation-delay: 0.25s;"></div>
+            <div class="mask-pattern-cell" style="animation-delay: 0.3s;"></div>
+            <div class="mask-pattern-cell" style="animation-delay: 0.35s;"></div>
+            <div class="mask-pattern-cell" style="animation-delay: 0.4s;"></div>
+            <div class="mask-pattern-cell" style="animation-delay: 0.45s;"></div>
+            <div class="mask-pattern-cell" style="animation-delay: 0.5s;"></div>
+            <div class="mask-pattern-cell" style="animation-delay: 0.55s;"></div>
+            <div class="mask-pattern-cell" style="animation-delay: 0.6s;"></div>
+            <div class="mask-pattern-cell" style="animation-delay: 0.65s;"></div>
+            <div class="mask-pattern-cell" style="animation-delay: 0.7s;"></div>
+            <div class="mask-pattern-cell" style="animation-delay: 0.75s;"></div>
+            <div class="mask-pattern-cell" style="animation-delay: 0.8s;"></div>
+            <div class="mask-pattern-cell" style="animation-delay: 0.85s;"></div>
+            <div class="mask-pattern-cell" style="animation-delay: 0.9s;"></div>
+            <div class="mask-pattern-cell" style="animation-delay: 0.95s;"></div>
+            <div class="mask-pattern-cell" style="animation-delay: 1s;"></div>
+            <div class="mask-pattern-cell" style="animation-delay: 1.05s;"></div>
+            <div class="mask-pattern-cell" style="animation-delay: 1.1s;"></div>
+            <div class="mask-pattern-cell" style="animation-delay: 1.15s;"></div>
+            <div class="mask-pattern-cell" style="animation-delay: 1.2s;"></div>
+            <div class="mask-pattern-cell" style="animation-delay: 1.25s;"></div>
+            <div class="mask-pattern-cell" style="animation-delay: 1.3s;"></div>
+            <div class="mask-pattern-cell" style="animation-delay: 1.35s;"></div>
+            <div class="mask-pattern-cell" style="animation-delay: 1.4s;"></div>
+            <div class="mask-pattern-cell" style="animation-delay: 1.45s;"></div>
+            <div class="mask-pattern-cell" style="animation-delay: 1.5s;"></div>
+            <div class="mask-pattern-cell" style="animation-delay: 1.55s;"></div>
+          </div>
+          
+          <div class="scan-line"></div>
+          
+          <div class="mode-icon">🎯</div>
+          
+          <div class="mode-content">
+            <div class="mode-header">
+              <h2 class="mode-title">SOLO</h2>
+              <span class="mode-mask">__ SOLO __</span>
+            </div>
+            <p class="mode-description">
+              Test your knowledge and skills on 3 different categories!
+            </p>
+          </div>
+          
+          <div class="mode-arrow">→</div>
+        </a>
+
+        <!-- CO-OP Mode -->
+        <a href="multiplayer-coop.html" class="mode-card coop">
+          <div class="mask-pattern">
+            <div class="mask-pattern-cell" style="animation-delay: 0s;"></div>
+            <div class="mask-pattern-cell" style="animation-delay: 0.05s;"></div>
+            <div class="mask-pattern-cell" style="animation-delay: 0.1s;"></div>
+            <div class="mask-pattern-cell" style="animation-delay: 0.15s;"></div>
+            <div class="mask-pattern-cell" style="animation-delay: 0.2s;"></div>
+            <div class="mask-pattern-cell" style="animation-delay: 0.25s;"></div>
+            <div class="mask-pattern-cell" style="animation-delay: 0.3s;"></div>
+            <div class="mask-pattern-cell" style="animation-delay: 0.35s;"></div>
+            <div class="mask-pattern-cell" style="animation-delay: 0.4s;"></div>
+            <div class="mask-pattern-cell" style="animation-delay: 0.45s;"></div>
+            <div class="mask-pattern-cell" style="animation-delay: 0.5s;"></div>
+            <div class="mask-pattern-cell" style="animation-delay: 0.55s;"></div>
+            <div class="mask-pattern-cell" style="animation-delay: 0.6s;"></div>
+            <div class="mask-pattern-cell" style="animation-delay: 0.65s;"></div>
+            <div class="mask-pattern-cell" style="animation-delay: 0.7s;"></div>
+            <div class="mask-pattern-cell" style="animation-delay: 0.75s;"></div>
+            <div class="mask-pattern-cell" style="animation-delay: 0.8s;"></div>
+            <div class="mask-pattern-cell" style="animation-delay: 0.85s;"></div>
+            <div class="mask-pattern-cell" style="animation-delay: 0.9s;"></div>
+            <div class="mask-pattern-cell" style="animation-delay: 0.95s;"></div>
+            <div class="mask-pattern-cell" style="animation-delay: 1s;"></div>
+            <div class="mask-pattern-cell" style="animation-delay: 1.05s;"></div>
+            <div class="mask-pattern-cell" style="animation-delay: 1.1s;"></div>
+            <div class="mask-pattern-cell" style="animation-delay: 1.15s;"></div>
+            <div class="mask-pattern-cell" style="animation-delay: 1.2s;"></div>
+            <div class="mask-pattern-cell" style="animation-delay: 1.25s;"></div>
+            <div class="mask-pattern-cell" style="animation-delay: 1.3s;"></div>
+            <div class="mask-pattern-cell" style="animation-delay: 1.35s;"></div>
+            <div class="mask-pattern-cell" style="animation-delay: 1.4s;"></div>
+            <div class="mask-pattern-cell" style="animation-delay: 1.45s;"></div>
+            <div class="mask-pattern-cell" style="animation-delay: 1.5s;"></div>
+            <div class="mask-pattern-cell" style="animation-delay: 1.55s;"></div>
+          </div>
+          
+          <div class="scan-line"></div>
+          
+          <div class="mode-icon">🤝</div>
+          
+          <div class="mode-content">
+            <div class="mode-header">
+              <h2 class="mode-title">CO-OP</h2>
+              <span class="mode-mask">P1__ + P2__</span>
+            </div>
+            <p class="mode-description">
+              Code with a friend and combine your frontends and backends
+            </p>
+          </div>
+          
+          <div class="mode-arrow">→</div>
+        </a>
+
+        <!-- BATTLE Mode -->
+        <a href="multiplayer-battle.html" class="mode-card battle">
+          <div class="mask-pattern">
+            <div class="mask-pattern-cell" style="animation-delay: 0s;"></div>
+            <div class="mask-pattern-cell" style="animation-delay: 0.05s;"></div>
+            <div class="mask-pattern-cell" style="animation-delay: 0.1s;"></div>
+            <div class="mask-pattern-cell" style="animation-delay: 0.15s;"></div>
+            <div class="mask-pattern-cell" style="animation-delay: 0.2s;"></div>
+            <div class="mask-pattern-cell" style="animation-delay: 0.25s;"></div>
+            <div class="mask-pattern-cell" style="animation-delay: 0.3s;"></div>
+            <div class="mask-pattern-cell" style="animation-delay: 0.35s;"></div>
+            <div class="mask-pattern-cell" style="animation-delay: 0.4s;"></div>
+            <div class="mask-pattern-cell" style="animation-delay: 0.45s;"></div>
+            <div class="mask-pattern-cell" style="animation-delay: 0.5s;"></div>
+            <div class="mask-pattern-cell" style="animation-delay: 0.55s;"></div>
+            <div class="mask-pattern-cell" style="animation-delay: 0.6s;"></div>
+            <div class="mask-pattern-cell" style="animation-delay: 0.65s;"></div>
+            <div class="mask-pattern-cell" style="animation-delay: 0.7s;"></div>
+            <div class="mask-pattern-cell" style="animation-delay: 0.75s;"></div>
+            <div class="mask-pattern-cell" style="animation-delay: 0.8s;"></div>
+            <div class="mask-pattern-cell" style="animation-delay: 0.85s;"></div>
+            <div class="mask-pattern-cell" style="animation-delay: 0.9s;"></div>
+            <div class="mask-pattern-cell" style="animation-delay: 0.95s;"></div>
+            <div class="mask-pattern-cell" style="animation-delay: 1s;"></div>
+            <div class="mask-pattern-cell" style="animation-delay: 1.05s;"></div>
+            <div class="mask-pattern-cell" style="animation-delay: 1.1s;"></div>
+            <div class="mask-pattern-cell" style="animation-delay: 1.15s;"></div>
+            <div class="mask-pattern-cell" style="animation-delay: 1.2s;"></div>
+            <div class="mask-pattern-cell" style="animation-delay: 1.25s;"></div>
+            <div class="mask-pattern-cell" style="animation-delay: 1.3s;"></div>
+            <div class="mask-pattern-cell" style="animation-delay: 1.35s;"></div>
+            <div class="mask-pattern-cell" style="animation-delay: 1.4s;"></div>
+            <div class="mask-pattern-cell" style="animation-delay: 1.45s;"></div>
+            <div class="mask-pattern-cell" style="animation-delay: 1.5s;"></div>
+            <div class="mask-pattern-cell" style="animation-delay: 1.55s;"></div>
+          </div>
+          
+          <div class="scan-line"></div>
+          
+          <div class="mode-icon">⚔️</div>
+          
+          <div class="mode-content">
+            <div class="mode-header">
+              <h2 class="mode-title">BATTLE</h2>
+              <span class="mode-mask">__ VS __</span>
+            </div>
+            <p class="mode-description">
+              Challenge a foe to sharpen your thinking!
+            </p>
+          </div>
+          
+          <div class="mode-arrow">→</div>
+        </a>
+
+      </div>
+
+      <!-- Bottom Hint -->
+      <p class="bottom-hint">
+        Click a mode to <span class="highlight">unmask</span> challenges
+      </p>
+
+    </div>
+  </div>
+
+  <script>
+    // Generate Animated Particles
+    const particleContainer = document.getElementById('particles');
+    for (let i = 0; i < 40; i++) {
+      const particle = document.createElement('div');
+      particle.className = 'particle';
+      particle.style.left = Math.random() * 100 + '%';
+      particle.style.top = Math.random() * 100 + '%';
+      particle.style.animationDelay = Math.random() * 5 + 's';
+      particle.style.animationDuration = (5 + Math.random() * 10) + 's';
+      particleContainer.appendChild(particle);
+    }
+
+    // Generate Masked Code Snippets
+    const codeSnippets = ['for(__)', 'if(__)', 'while(__)', 'int __', 'void __'];
+    const codeContainer = document.getElementById('codeSnippets');
+    
+    codeSnippets.forEach((snippet, i) => {
+      const codeElement = document.createElement('div');
+      codeElement.className = 'code-snippet';
+      codeElement.textContent = snippet;
+      codeElement.style.left = Math.random() * 100 + '%';
+      codeElement.style.top = Math.random() * 100 + '%';
+      codeElement.style.animationDelay = (i * 0.5) + 's';
+      codeContainer.appendChild(codeElement);
+    });
+  </script>
+</body>
+</html>

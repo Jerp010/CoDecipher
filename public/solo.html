@@ -1,0 +1,878 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Solo Hackathon Challenge</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(
+          135deg,
+          #3e1257 0%,
+          #5c1069 50%,
+          #3e1257 100%
+        );
+        min-height: 100vh;
+        color: #fff;
+        overflow-x: hidden;
+      }
+
+      /* Animated Particle Background */
+      .particle-bg {
+        position: fixed;
+        inset: 0;
+        overflow: hidden;
+        pointer-events: none;
+        z-index: 0;
+      }
+
+      .particle {
+        position: absolute;
+        width: 4px;
+        height: 4px;
+        background: rgba(244, 228, 77, 0.3);
+        border-radius: 50%;
+        animation: float-particle 10s infinite;
+      }
+
+      @keyframes float-particle {
+        0% {
+          transform: translateY(0) translateX(0);
+          opacity: 0;
+        }
+        50% {
+          opacity: 1;
+        }
+        100% {
+          transform: translateY(-100vh) translateX(50px);
+          opacity: 0;
+        }
+      }
+
+      /* Masked Code Background */
+      .code-pattern {
+        position: fixed;
+        inset: 0;
+        overflow: hidden;
+        pointer-events: none;
+        opacity: 0.1;
+        z-index: 0;
+      }
+
+      .masked-text {
+        position: absolute;
+        font-family: "Courier New", monospace;
+        font-size: 2rem;
+        font-weight: bold;
+        color: #f4e04d;
+        animation: float-code 12s infinite ease-in-out;
+      }
+
+      @keyframes float-code {
+        0%,
+        100% {
+          transform: translateY(0) rotate(0deg);
+          opacity: 0.1;
+        }
+        50% {
+          transform: translateY(-40px) rotate(5deg);
+          opacity: 0.3;
+        }
+      }
+
+      /* Back Button */
+      .back-button {
+        position: fixed;
+        top: 2rem;
+        left: 2rem;
+        width: 4rem;
+        height: 4rem;
+        background: #f4e04d;
+        border: none;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        z-index: 50;
+        box-shadow: 0 0 30px rgba(244, 228, 77, 0.3);
+        transition: all 0.3s ease;
+        text-decoration: none;
+        color: #3e1257;
+      }
+
+      .back-button:hover {
+        transform: scale(1.1) rotate(-5deg);
+        box-shadow: 0 0 40px rgba(244, 228, 77, 0.6);
+      }
+
+      .back-button svg {
+        width: 2rem;
+        height: 2rem;
+        stroke: #3e1257;
+        stroke-width: 3;
+        fill: none;
+      }
+
+      /* Topic Selection Screen */
+      .topic-selection {
+        position: relative;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem;
+        z-index: 10;
+      }
+
+      .topic-title {
+        font-size: 4rem;
+        font-weight: bold;
+        font-family: "Courier New", monospace;
+        margin-bottom: 1rem;
+        text-shadow: 3px 3px 0px rgba(0, 0, 0, 0.3);
+        position: relative;
+        animation: fade-in 0.5s ease;
+      }
+
+      @keyframes fade-in {
+        from {
+          opacity: 0;
+          transform: scale(0.9);
+        }
+        to {
+          opacity: 1;
+          transform: scale(1);
+        }
+      }
+
+      .mode-indicator {
+        background: rgba(58, 16, 87, 0.5);
+        backdrop-filter: blur(10px);
+        padding: 0.5rem 1rem;
+        border-radius: 0.5rem;
+        border: 1px solid rgba(168, 85, 247, 0.3);
+        margin-bottom: 2.5rem;
+        font-family: "Courier New", monospace;
+        font-size: 0.875rem;
+        color: #d8b4fe;
+        animation: fade-in 0.5s ease 0.3s backwards;
+      }
+
+      .topic-subtitle {
+        font-size: 2.5rem;
+        font-weight: bold;
+        font-family: "Courier New", monospace;
+        color: #f4e04d;
+        text-shadow: 2px 2px 0px rgba(0, 0, 0, 0.3);
+        margin-bottom: 3rem;
+        animation: fade-in 0.5s ease 0.2s backwards;
+      }
+
+      .topic-subtitle .emoji {
+        animation: pulse-emoji 2s infinite;
+      }
+
+      @keyframes pulse-emoji {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.5;
+        }
+      }
+
+      .topic-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1.25rem;
+        max-width: 48rem;
+        margin-bottom: 2rem;
+      }
+
+      .topic-card {
+        background: #ad54e0;
+        padding: 2.5rem 2rem;
+        border-radius: 1.5rem;
+        cursor: pointer;
+        position: relative;
+        overflow: hidden;
+        transition: all 0.3s ease;
+        animation: scale-in 0.5s ease backwards;
+        text-align: center;
+      }
+
+      .topic-card:nth-child(1) {
+        animation-delay: 0.4s;
+      }
+      .topic-card:nth-child(2) {
+        animation-delay: 0.48s;
+      }
+      .topic-card:nth-child(3) {
+        animation-delay: 0.56s;
+      }
+      .topic-card:nth-child(4) {
+        animation-delay: 0.64s;
+      }
+      .topic-card:nth-child(5) {
+        animation-delay: 0.72s;
+      }
+      .topic-card:nth-child(6) {
+        animation-delay: 0.8s;
+      }
+
+      @keyframes scale-in {
+        from {
+          transform: scale(0) rotate(-180deg);
+          opacity: 0;
+        }
+        to {
+          transform: scale(1) rotate(0deg);
+          opacity: 1;
+        }
+      }
+
+      .topic-card:hover {
+        transform: scale(1.08) translateY(-5px);
+      }
+
+      .topic-card.selected {
+        box-shadow: 0 0 0 3px #28a745;
+      }
+
+      .topic-card::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: repeating-linear-gradient(
+          45deg,
+          transparent,
+          transparent 10px,
+          rgba(255, 255, 255, 0.05) 10px,
+          rgba(255, 255, 255, 0.05) 20px
+        );
+        pointer-events: none;
+      }
+
+      .topic-card::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        height: 2px;
+        background: linear-gradient(
+          to right,
+          transparent,
+          rgba(255, 255, 255, 0.5),
+          transparent
+        );
+        transform: translateY(-100%);
+        transition: transform 0.4s ease;
+      }
+
+      .topic-card:hover::after {
+        animation: scan-line 0.4s ease;
+      }
+
+      @keyframes scan-line {
+        from {
+          top: 0;
+        }
+        to {
+          top: 100%;
+        }
+      }
+
+      .topic-icon {
+        font-size: 3rem;
+        margin-bottom: 0.75rem;
+        display: block;
+        position: relative;
+        z-index: 1;
+      }
+
+      .topic-name {
+        font-size: 1.25rem;
+        font-weight: bold;
+        color: white;
+        margin-bottom: 0.5rem;
+        position: relative;
+        z-index: 1;
+      }
+
+      .topic-desc {
+        font-size: 0.813rem;
+        color: rgba(255, 255, 255, 0.9);
+        position: relative;
+        z-index: 1;
+      }
+
+      .start-quiz-btn {
+        background: #28a745;
+        color: white;
+        border: none;
+        padding: 15px 40px;
+        border-radius: 30px;
+        font-size: 18px;
+        font-weight: 600;
+        cursor: pointer;
+        margin-top: 30px;
+        transition: all 0.3s;
+        animation: fade-in 0.5s ease 0.9s backwards;
+      }
+
+      .start-quiz-btn:hover:not(:disabled) {
+        background: #218838;
+        transform: scale(1.05);
+      }
+
+      .start-quiz-btn:disabled {
+        background: #6c757d;
+        cursor: not-allowed;
+        opacity: 0.5;
+      }
+
+      .bottom-hint {
+        color: #d8b4fe;
+        font-size: 0.875rem;
+        margin-top: 2rem;
+        opacity: 0;
+        animation: fade-in 0.5s ease 1.2s forwards;
+      }
+
+      .bottom-hint .highlight {
+        color: #f4e04d;
+        font-weight: bold;
+      }
+
+      /* Quiz Screen */
+      .quiz-container {
+        position: relative;
+        min-height: 100vh;
+        padding: 8rem 2rem 3rem;
+        z-index: 10;
+      }
+
+      .quiz-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        max-width: 900px;
+        margin: 0 auto 2rem;
+        padding-bottom: 20px;
+        border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+      }
+
+      .question-counter {
+        font-size: 18px;
+        color: #f4e04d;
+        font-weight: 700;
+        font-family: "Courier New", monospace;
+      }
+
+      .score-display {
+        font-size: 18px;
+        color: #28a745;
+        font-weight: 700;
+        font-family: "Courier New", monospace;
+      }
+
+      .question-card {
+        background: rgba(74, 34, 105, 0.7);
+        /* backdrop-filter: blur(10px); */
+        padding: 30px;
+        border-radius: 12px;
+        margin: 0 auto 25px;
+        max-width: 900px;
+        border: 2px solid rgba(255, 255, 255, 0.1);
+      }
+
+      .question-text {
+        font-size: 18px;
+        line-height: 1.8;
+        color: #fff;
+        margin-bottom: 20px;
+        font-family: "Courier New", monospace;
+      }
+
+      .blank-input {
+        display: inline-block;
+        background: #1e2127;
+        border: 2px solid #61afef;
+        border-radius: 4px;
+        padding: 4px 10px;
+        font-size: 14px;
+        font-family: "Courier New", monospace;
+        min-width: 100px;
+        text-align: center;
+        outline: none;
+        transition: all 0.3s;
+        color: #e06c75;
+        font-weight: bold;
+      }
+
+      .blank-input:focus {
+        border-color: #c678dd;
+        box-shadow: 0 0 0 3px rgba(198, 120, 221, 0.3);
+        background: #282c34;
+      }
+
+      .blank-input.correct {
+        border-color: #98c379;
+        background: #2c3e2f;
+        color: #98c379;
+        animation: success-bounce 0.2s ease;
+      }
+
+      .blank-input.incorrect {
+        border-color: #e06c75;
+        background: #3e2c2c;
+        color: #e06c75;
+      }
+
+      .blank-input:disabled {
+        opacity: 0.9;
+        cursor: not-allowed;
+      }
+
+      @keyframes success-bounce {
+        0%,
+        100% {
+          transform: scale(1);
+        }
+        50% {
+          transform: scale(1.05);
+        }
+      }
+
+      .quiz-actions {
+        display: flex;
+        gap: 15px;
+        justify-content: center;
+        max-width: 900px;
+        margin: 0 auto;
+      }
+
+      .quiz-btn {
+        padding: 12px 30px;
+        border: none;
+        border-radius: 8px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+      }
+
+      .submit-btn {
+        background: #667eea;
+        color: white;
+      }
+
+      .submit-btn:hover {
+        background: #5568d3;
+        transform: scale(1.05);
+      }
+
+      .submit-btn:disabled {
+        background: #ccc;
+        cursor: not-allowed;
+      }
+
+      .skip-btn {
+        background: #6c757d;
+        color: white;
+      }
+
+      .skip-btn:hover {
+        background: #5a6268;
+        transform: scale(1.05);
+      }
+
+      .feedback {
+        margin-top: 20px;
+        padding: 15px;
+        border-radius: 8px;
+        font-size: 14px;
+        display: none;
+        max-width: 900px;
+        margin-left: auto;
+        margin-right: auto;
+      }
+
+      .feedback.correct {
+        background: #d4edda;
+        color: #155724;
+        border: 1px solid #c3e6cb;
+        display: block;
+      }
+
+      .feedback.incorrect {
+        background: #f8d7da;
+        color: #721c24;
+        border: 1px solid #f5c6cb;
+        display: block;
+      }
+
+      /* Results Screen */
+      .results-container {
+        position: relative;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem;
+        z-index: 10;
+      }
+
+      .results-icon {
+        font-size: 80px;
+        margin-bottom: 20px;
+        text-align: center;
+      }
+
+      .results-title {
+        font-size: 32px;
+        color: #f4e04d;
+        margin-bottom: 15px;
+        font-weight: 700;
+        text-align: center;
+        font-family: "Courier New", monospace;
+        text-shadow: 3px 3px 0px rgba(0, 0, 0, 0.3);
+      }
+
+      .results-score {
+        font-size: 48px;
+        color: #28a745;
+        margin-bottom: 10px;
+        font-weight: 700;
+        text-align: center;
+        font-family: "Courier New", monospace;
+      }
+
+      .results-message {
+        font-size: 18px;
+        color: #d8b4fe;
+        margin-bottom: 30px;
+        text-align: center;
+      }
+
+      .results-stats {
+        background: rgba(74, 34, 105, 0.7);
+        backdrop-filter: blur(10px);
+        padding: 20px;
+        border-radius: 8px;
+        margin-bottom: 30px;
+        border: 2px solid rgba(255, 255, 255, 0.1);
+      }
+
+      .stat-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 10px 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      }
+
+      .stat-row:last-child {
+        border-bottom: none;
+      }
+
+      .stat-label {
+        color: #d8b4fe;
+        font-weight: 600;
+      }
+
+      .stat-value {
+        color: #fff;
+        font-weight: 700;
+        font-family: "Courier New", monospace;
+      }
+
+      .menu-btn {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        padding: 15px 50px;
+        border-radius: 30px;
+        font-size: 18px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+        display: block;
+        margin: 0 auto;
+      }
+
+      .menu-btn:hover {
+        transform: scale(1.05);
+        box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+      }
+
+      .hidden {
+        display: none !important;
+      }
+
+      @media (max-width: 768px) {
+        .topic-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+
+        .topic-title {
+          font-size: 2.5rem;
+        }
+
+        .topic-subtitle {
+          font-size: 1.75rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Animated Background -->
+    <div class="particle-bg" id="particleBg"></div>
+    <div class="code-pattern" id="codePattern"></div>
+
+    <!-- Status Bar (hidden on topic selection, shown on quiz) -->
+    <div
+      style="
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        background: rgba(255, 255, 255, 0.95);
+        padding: 20px;
+        text-align: center;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        z-index: 100;
+        display: none;
+      "
+      id="statusBar"
+    >
+      <div
+        style="
+          display: flex;
+          justify-content: center;
+          gap: 20px;
+          flex-wrap: wrap;
+        "
+      >
+        <div
+          style="
+            background: #d4edda;
+            color: #155724;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+          "
+          id="topicStatus"
+        >
+          Select Topic
+        </div>
+        <div
+          style="
+            background: #d4edda;
+            color: #155724;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+          "
+          id="questionStatus"
+        >
+          Question 0/10
+        </div>
+        <div
+          style="
+            background: #d4edda;
+            color: #155724;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+          "
+          id="scoreStatus"
+        >
+          Score: 0
+        </div>
+      </div>
+    </div>
+
+    <!-- Topic Selection Screen -->
+    <div class="topic-selection" id="topicSelection">
+      <a href="menu.html" class="back-button">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M15 19l-7-7 7-7"
+          />
+        </svg>
+      </a>
+
+      <h1 class="topic-title">SOLO</h1>
+      <div class="mode-indicator">MODE__SOLO__4__CHARS</div>
+      <h2 class="topic-subtitle">
+        <span class="emoji">🎭</span>
+        What would you like to <span style="color: white">unmask</span>?
+      </h2>
+
+      <div class="topic-grid">
+        <div class="topic-card" data-topic="html_js">
+          <span class="topic-icon">🌐</span>
+          <div class="topic-name">HTML & JavaScript</div>
+          <div class="topic-desc">Web development fundamentals</div>
+        </div>
+
+        <div class="topic-card" data-topic="oop">
+          <span class="topic-icon">🎯</span>
+          <div class="topic-name">OOP</div>
+          <div class="topic-desc">Object-Oriented Programming</div>
+        </div>
+
+        <div class="topic-card" data-topic="sql">
+          <span class="topic-icon">🗄️</span>
+          <div class="topic-name">SQL</div>
+          <div class="topic-desc">Database queries & management</div>
+        </div>
+
+        <div class="topic-card" data-topic="c++">
+          <span class="topic-icon">💻</span>
+          <div class="topic-name">C++</div>
+          <div class="topic-desc">Programming fundamentals</div>
+        </div>
+
+        <div class="topic-card" data-topic="python">
+          <span class="topic-icon">🐍</span>
+          <div class="topic-name">Python</div>
+          <div class="topic-desc">Data science and machine learning</div>
+        </div>
+
+        <div class="topic-card" data-topic="csharp">
+          <span class="topic-icon">💻</span>
+          <div class="topic-name">C#</div>
+          <div class="topic-desc">
+            Primary language for the Unity game engine
+          </div>
+        </div>
+      </div>
+
+      <button class="start-quiz-btn" id="startQuizBtn" disabled>
+        Start Quiz →
+      </button>
+
+      <p class="bottom-hint">
+        Select a language to <span class="highlight">reveal</span> the
+        challenges
+      </p>
+    </div>
+
+    <!-- Quiz Screen -->
+    <div class="quiz-container hidden" id="quizContainer">
+      <a href="menu.html" class="back-button">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M15 19l-7-7 7-7"
+          />
+        </svg>
+      </a>
+
+      <div class="quiz-header">
+        <div class="question-counter" id="questionCounter">Question 1/10</div>
+        <div class="score-display" id="scoreDisplay">Score: 0/10</div>
+      </div>
+
+      <div class="question-card">
+        <div class="question-text" id="questionText"></div>
+      </div>
+
+      <div class="feedback" id="feedback"></div>
+
+      <div class="quiz-actions">
+        <button class="quiz-btn submit-btn" id="submitBtn">
+          Submit Answer
+        </button>
+        <button class="quiz-btn skip-btn" id="skipBtn">Skip Question</button>
+      </div>
+    </div>
+
+    <!-- Results Screen -->
+    <div class="results-container hidden" id="resultsContainer">
+      <div
+        style="
+          max-width: 600px;
+          width: 100%;
+          background: rgba(74, 34, 105, 0.7);
+          backdrop-filter: blur(10px);
+          border-radius: 1rem;
+          padding: 50px 40px;
+          border: 2px solid rgba(255, 255, 255, 0.1);
+        "
+      >
+        <div class="results-icon" id="resultsIcon">🎉</div>
+        <div class="results-title">Quiz Complete!</div>
+        <div class="results-score" id="finalScore">0/10</div>
+        <div class="results-message" id="resultsMessage"></div>
+
+        <div class="results-stats">
+          <div class="stat-row">
+            <span class="stat-label">Total Questions:</span>
+            <span class="stat-value">10</span>
+          </div>
+          <div class="stat-row">
+            <span class="stat-label">Correct Answers:</span>
+            <span class="stat-value" id="correctCount">0</span>
+          </div>
+          <div class="stat-row">
+            <span class="stat-label">Skipped:</span>
+            <span class="stat-value" id="skippedCount">0</span>
+          </div>
+          <div class="stat-row">
+            <span class="stat-label">Accuracy:</span>
+            <span class="stat-value" id="accuracy">0%</span>
+          </div>
+        </div>
+
+        <button class="menu-btn" onclick="location.href = 'menu.html'">
+          Back to Menu
+        </button>
+      </div>
+    </div>
+
+    <script src="solo-client.js"></script>
+    <script>
+      // Generate animated particles
+      const particleBg = document.getElementById("particleBg");
+      for (let i = 0; i < 30; i++) {
+        const particle = document.createElement("div");
+        particle.className = "particle";
+        particle.style.left = Math.random() * 100 + "%";
+        particle.style.top = Math.random() * 100 + "%";
+        particle.style.animationDelay = Math.random() * 5 + "s";
+        particle.style.animationDuration = 5 + Math.random() * 10 + "s";
+        particleBg.appendChild(particle);
+      }
+
+      // Generate code pattern background
+      const codePattern = document.getElementById("codePattern");
+      const maskedTexts = ["____", "??", "▓▓▓", "___", "██"];
+      maskedTexts.forEach((text, i) => {
+        const masked = document.createElement("div");
+        masked.className = "masked-text";
+        masked.textContent = text;
+        masked.style.left = Math.random() * 100 + "%";
+        masked.style.top = Math.random() * 100 + "%";
+        masked.style.animationDelay = i * 0.5 + "s";
+        codePattern.appendChild(masked);
+      });
+    </script>
+  </body>
+</html>

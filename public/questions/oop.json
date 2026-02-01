@@ -1,0 +1,142 @@
+[
+  {
+    "id": 1,
+    "topic": "Classes & Objects",
+    "question": "Define the special method used to initialize an object's properties.",
+    "code_snippet": "class Person {\n  ___(name, age) {\n    ___ .name = name;\n    ___ .age = age;\n  }\n}",
+    "answers": ["constructor", "this", "this"]
+  },
+  {
+    "id": 2,
+    "topic": "Inheritance",
+    "question": "Create a class that inherits from another class.",
+    "code_snippet": "class Animal {}\n\nclass Dog ___ Animal {\n  ___() { console.log('Woof'); }\n}",
+    "answers": ["extends", "bark"]
+  },
+  {
+    "id": 3,
+    "topic": "Classes & Objects",
+    "question": "Create a new object from a class.",
+    "code_snippet": "class Car {}\n\nconst myCar = ___ ___();",
+    "answers": ["new", "Car"]
+  },
+  {
+    "id": 4,
+    "topic": "Encapsulation",
+    "question": "Use a private field to protect internal data.",
+    "code_snippet": "class BankAccount {\n  ___balance = 0;\n\n  deposit(amount) {\n    this.___balance ___ amount;\n  }\n}",
+    "answers": ["#", "#", "+="]
+  },
+  {
+    "id": 5,
+    "topic": "Inheritance",
+    "question": "Call the parent class constructor correctly.",
+    "code_snippet": "class Square extends Rectangle {\n  constructor(side) {\n    ___(___, ___);\n  }\n}",
+    "answers": ["super", "side", "side"]
+  },
+  {
+    "id": 6,
+    "topic": "Classes & Objects",
+    "question": "Modify properties of the current object.",
+    "code_snippet": "class User {\n  setName(name) {\n    ___ .name = ___;\n  }\n}",
+    "answers": ["this", "name"]
+  },
+  {
+    "id": 7,
+    "topic": "Classes & Objects",
+    "question": "Create a method that belongs to the class itself.",
+    "code_snippet": "class MathHelper {\n  ___ add(a, b) {\n    ___ a + b;\n  }\n}",
+    "answers": ["static", "return"]
+  },
+  {
+    "id": 8,
+    "topic": "Encapsulation",
+    "question": "Use a getter to return a computed value.",
+    "code_snippet": "class Circle {\n  constructor(r) { this.r = r; }\n\n  ___ area() {\n    ___ Math.PI * this.r * this.r;\n  }\n}",
+    "answers": ["get", "return"]
+  },
+  {
+    "id": 9,
+    "topic": "Polymorphism",
+    "question": "Check if an object is an instance of a class.",
+    "code_snippet": "const p = ___ Person();\nconst check = p ___ Person;",
+    "answers": ["new", "instanceof"]
+  },
+  {
+    "id": 10,
+    "topic": "Encapsulation",
+    "question": "Validate data before assigning it using a setter.",
+    "code_snippet": "class User {\n  ___ age(value) {\n    if (value < 0) ___ new Error('Invalid');\n    this._age = ___;\n  }\n}",
+    "answers": ["set", "throw", "value"]
+  },
+  {
+    "id": 11,
+    "topic": "Classes & Objects",
+    "question": "Define a class structure.",
+    "code_snippet": "___ Robot {\n  ___() {\n    console.log('Beep');\n  }\n}",
+    "answers": ["class", "constructor"]
+  },
+  {
+    "id": 12,
+    "topic": "Classes & Objects",
+    "question": "Bind a method to preserve context.",
+    "code_snippet": "class Button {\n  constructor() {\n    this.click = this.click.___(___);\n  }\n}",
+    "answers": ["bind", "this"]
+  },
+  {
+    "id": 13,
+    "topic": "Inheritance",
+    "question": "Call a parent method inside a child class.",
+    "code_snippet": "class Admin extends User {\n  log() {\n    ___ .logAction('Admin');\n  }\n}",
+    "answers": ["super"]
+  },
+  {
+    "id": 14,
+    "topic": "Polymorphism",
+    "question": "Override the default string representation of an object.",
+    "code_snippet": "class Dog {\n  ___() {\n    ___ 'Dog object';\n  }\n}",
+    "answers": ["toString", "return"]
+  },
+  {
+    "id": 15,
+    "topic": "Encapsulation",
+    "question": "Prevent changes to an object.",
+    "code_snippet": "const config = { mode: 'dev' };\n\nObject.___(___);",
+    "answers": ["freeze", "config"]
+  },
+  {
+    "id": 16,
+    "topic": "Classes & Objects",
+    "question": "Check if a property belongs directly to an object.",
+    "code_snippet": "const obj = { a: 1 };\n\nobj.___('___');",
+    "answers": ["hasOwnProperty", "a"]
+  },
+  {
+    "id": 17,
+    "topic": "Classes & Objects",
+    "question": "Add shared behavior using prototypes.",
+    "code_snippet": "function User(name) { this.name = name; }\n\nUser.___.sayHi = function() {\n  alert('Hi ' + ___ .name);\n};",
+    "answers": ["prototype", "this"]
+  },
+  {
+    "id": 18,
+    "topic": "Classes & Objects",
+    "question": "Copy properties from one object to another.",
+    "code_snippet": "Object.___(___, ___);",
+    "answers": ["assign", "target", "source"]
+  },
+  {
+    "id": 19,
+    "topic": "Encapsulation",
+    "question": "Return a value using a getter.",
+    "code_snippet": "get width() {\n  ___ this.w;\n}",
+    "answers": ["return"]
+  },
+  {
+    "id": 20,
+    "topic": "Inheritance",
+    "question": "Access the name of an object's constructor.",
+    "code_snippet": "const d = new Date();\n\nd.___.___;",
+    "answers": ["constructor", "name"]
+  }
+]

@@ -1,0 +1,145 @@
+[
+  {
+    "id": 1,
+    "topic": "HTML",
+    "question": "Create a heading level 1 with the text Hello.",
+    "code_snippet": "<___>Hello</___>",
+    "answers": ["h1", "h1"]
+  },
+  {
+    "id": 2,
+    "topic": "HTML",
+    "question": "Create a paragraph element.",
+    "code_snippet": "<___>This is text</___>",
+    "answers": ["p", "p"]
+  },
+  {
+    "id": 3,
+    "topic": "JavaScript",
+    "question": "Declare a variable named count with value 5.",
+    "code_snippet": "___ ___ = 5;",
+    "answers": ["let", "count"]
+  },
+  {
+    "id": 4,
+    "topic": "JavaScript",
+    "question": "Print a message to the console.",
+    "code_snippet": "___(___);",
+    "answers": ["console.log", "\"Hi\""]
+  },
+  {
+    "id": 5,
+    "topic": "HTML",
+    "question": "Create a button with text Click.",
+    "code_snippet": "<___>Click</___>",
+    "answers": ["button", "button"]
+  },
+
+  {
+    "id": 6,
+    "topic": "JavaScript",
+    "question": "Increase the value of x by 1.",
+    "code_snippet": "x___;",
+    "answers": ["++"]
+  },
+  {
+    "id": 7,
+    "topic": "HTML",
+    "question": "Create a text input field.",
+    "code_snippet": "<input type=\"___\">",
+    "answers": ["text"]
+  },
+  {
+    "id": 8,
+    "topic": "JavaScript",
+    "question": "Check if age is greater than 18.",
+    "code_snippet": "if(age ___ ___) {\n}",
+    "answers": [">", "18"]
+  },
+  {
+    "id": 9,
+    "topic": "HTML",
+    "question": "Create an image element with source photo.jpg.",
+    "code_snippet": "<img ___=\"photo.jpg\">",
+    "answers": ["src"]
+  },
+  {
+    "id": 10,
+    "topic": "JavaScript",
+    "question": "Create a function named greet.",
+    "code_snippet": "function ___() {\n}",
+    "answers": ["greet"]
+  },
+
+  {
+    "id": 11,
+    "topic": "HTML",
+    "question": "Create an unordered list item.",
+    "code_snippet": "<___>Item</___>",
+    "answers": ["li", "li"]
+  },
+  {
+    "id": 12,
+    "topic": "JavaScript",
+    "question": "Access an element by its ID.",
+    "code_snippet": "document.___('box');",
+    "answers": ["getElementById"]
+  },
+  {
+    "id": 13,
+    "topic": "HTML",
+    "question": "Create a link to example.com.",
+    "code_snippet": "<a ___=\"https://example.com\">Link</a>",
+    "answers": ["href"]
+  },
+  {
+    "id": 14,
+    "topic": "JavaScript",
+    "question": "Create an array with values 1 and 2.",
+    "code_snippet": "let nums = [___, ___];",
+    "answers": ["1", "2"]
+  },
+  {
+    "id": 15,
+    "topic": "HTML",
+    "question": "Create a checkbox input.",
+    "code_snippet": "<input type=\"___\">",
+    "answers": ["checkbox"]
+  },
+
+  {
+    "id": 16,
+    "topic": "JavaScript",
+    "question": "Run code while i is less than 3.",
+    "code_snippet": "while(i ___ ___) {\n}",
+    "answers": ["<", "3"]
+  },
+  {
+    "id": 17,
+    "topic": "HTML",
+    "question": "Group form elements using a div.",
+    "code_snippet": "<___>\n</___>",
+    "answers": ["div", "div"]
+  },
+  {
+    "id": 18,
+    "topic": "JavaScript",
+    "question": "Change the text of an element.",
+    "code_snippet": "element.___ = ___;",
+    "answers": ["innerText", "\"Done\""]
+  },
+  {
+    "id": 19,
+    "topic": "HTML",
+    "question": "Create a dropdown menu.",
+    "code_snippet": "<___>\n</___>",
+    "answers": ["select", "select"]
+  },
+  {
+    "id": 20,
+    "topic": "JavaScript",
+    "question": "Use strict mode in JavaScript.",
+    "code_snippet": "___ ___;",
+    "answers": ["\"use", "strict\""]
+  }
+]

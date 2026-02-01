@@ -1,0 +1,1331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Multiplayer Battle - Hackathon</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #3e1257 0%, #5c1069 50%, #3e1257 100%);
+      min-height: 100vh;
+      color: #fff;
+      overflow-x: hidden;
+    }
+
+    /* Animated Particle Background */
+    .particle-bg {
+      position: fixed;
+      inset: 0;
+      overflow: hidden;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .particle {
+      position: absolute;
+      width: 4px;
+      height: 4px;
+      background: rgba(244, 228, 77, 0.2);
+      border-radius: 50%;
+      animation: float-particle 10s infinite;
+    }
+
+    @keyframes float-particle {
+      0% {
+        transform: translateY(0) translateX(0);
+        opacity: 0;
+      }
+      50% {
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(-100vh) translateX(50px);
+        opacity: 0;
+      }
+    }
+
+    /* Decorative Grid Pattern */
+    .grid-decoration {
+      position: fixed;
+      top: 0;
+      right: 0;
+      width: 16rem;
+      height: 16rem;
+      pointer-events: none;
+      opacity: 0.2;
+      z-index: 1;
+    }
+
+    .grid-decoration .grid-container {
+      display: grid;
+      grid-template-columns: repeat(8, 1fr);
+      gap: 0.75rem;
+      padding: 1.5rem;
+    }
+
+    .grid-dot {
+      width: 0.5rem;
+      height: 0.5rem;
+      border-radius: 50%;
+      background: #f87171;
+      animation: grid-pulse 2s infinite;
+    }
+
+    @keyframes grid-pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.5); }
+    }
+
+    /* Header */
+    .header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      background: rgba(74, 34, 105, 0.95);
+      backdrop-filter: blur(10px);
+      padding: 1rem 1.5rem;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+      z-index: 100;
+      border-bottom: 2px solid rgba(244, 228, 77, 0.2);
+    }
+
+    .header-content {
+      max-width: 1800px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .header h1 {
+      color: #f4e04d;
+      font-size: 1.5rem;
+      font-family: 'Courier New', monospace;
+      text-shadow: 2px 2px 0px rgba(0, 0, 0, 0.3);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .header h1 .emoji {
+      display: inline-block;
+      animation: rotate-emoji 2s infinite;
+    }
+
+    @keyframes rotate-emoji {
+      0%, 100% { transform: rotate(0deg); }
+      25% { transform: rotate(10deg); }
+      75% { transform: rotate(-10deg); }
+    }
+
+    .back-button {
+      width: 3.5rem;
+      height: 3.5rem;
+      background: #f4e04d;
+      border: none;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 0 30px rgba(244, 228, 77, 0.3);
+      transition: all 0.3s ease;
+      text-decoration: none;
+    }
+
+    .back-button:hover {
+      transform: scale(1.1) rotate(-5deg);
+      box-shadow: 0 0 40px rgba(244, 228, 77, 0.6);
+    }
+
+    .back-button svg {
+      width: 1.75rem;
+      height: 1.75rem;
+      stroke: #3e1257;
+      stroke-width: 3;
+      fill: none;
+    }
+
+    .status-bar {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .status-item {
+      background: rgba(74, 34, 105, 0.7);
+      backdrop-filter: blur(10px);
+      padding: 0.5rem 1rem;
+      border-radius: 1rem;
+      font-size: 0.813rem;
+      font-weight: 600;
+      color: white;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .status-item.waiting {
+      background: rgba(251, 191, 36, 0.8);
+      color: #78350f;
+      animation: pulse-status 2s infinite;
+    }
+
+    .status-item.paired {
+      background: rgba(34, 197, 94, 0.8);
+      color: #14532d;
+    }
+
+    @keyframes pulse-status {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.7; }
+    }
+
+    .timer {
+      background: #f4e04d;
+      padding: 0.75rem 2rem;
+      border-radius: 2rem;
+      box-shadow: 0 0 20px rgba(244, 228, 77, 0.3);
+    }
+
+    .timer.warning {
+      animation: pulse-timer 1s infinite;
+    }
+
+    @keyframes pulse-timer {
+      0%, 100% {
+        box-shadow: 0 0 20px rgba(244, 228, 77, 0.5);
+      }
+      50% {
+        box-shadow: 0 0 40px rgba(244, 228, 77, 0.8);
+      }
+    }
+
+    .timer-text {
+      font-family: 'Courier New', monospace;
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: #3e1257;
+    }
+
+    .timer-text.warning {
+      color: #dc2626;
+    }
+
+    .cancel-button {
+      background: #dc3545;
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 1rem;
+      font-size: 0.813rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .cancel-button:hover {
+      background: #c82333;
+      transform: scale(1.05);
+    }
+
+    /* Connection Overlay */
+    .connection-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.9);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      backdrop-filter: blur(10px);
+    }
+
+    .connection-message {
+      background: rgba(74, 34, 105, 0.95);
+      backdrop-filter: blur(20px);
+      padding: 3rem 2.5rem;
+      border-radius: 1.5rem;
+      text-align: center;
+      max-width: 500px;
+      width: 90%;
+      border: 2px solid rgba(244, 228, 77, 0.3);
+      box-shadow: 0 0 50px rgba(244, 228, 77, 0.2);
+      animation: modalPop 0.5s ease;
+    }
+
+    @keyframes modalPop {
+      0% {
+        transform: scale(0.5);
+        opacity: 0;
+      }
+      100% {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+
+    .spinner {
+      width: 60px;
+      height: 60px;
+      border: 5px solid rgba(244, 228, 77, 0.2);
+      border-top: 5px solid #f4e04d;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 1.5rem;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .connection-message h2 {
+      color: #f4e04d;
+      font-size: 2rem;
+      margin-bottom: 1rem;
+      font-family: 'Courier New', monospace;
+      text-shadow: 2px 2px 0px rgba(0, 0, 0, 0.3);
+    }
+
+    .connection-message p {
+      color: #d8b4fe;
+      margin-bottom: 1.5rem;
+      font-size: 1rem;
+    }
+
+    /* Topic Selection Overlay */
+    .topic-selection-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.9);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1500;
+      display: none;
+      backdrop-filter: blur(10px);
+    }
+
+    .topic-selection-content {
+      background: rgba(74, 34, 105, 0.95);
+      backdrop-filter: blur(20px);
+      padding: 2.5rem;
+      border-radius: 1.5rem;
+      max-width: 800px;
+      width: 90%;
+      max-height: 90vh;
+      overflow-y: auto;
+      border: 2px solid rgba(244, 228, 77, 0.3);
+      box-shadow: 0 0 50px rgba(244, 228, 77, 0.2);
+      animation: modalPop 0.5s ease;
+    }
+
+    .topic-selection-content h2 {
+      color: #f4e04d;
+      font-size: 2rem;
+      margin-bottom: 0.75rem;
+      text-align: center;
+      font-family: 'Courier New', monospace;
+      text-shadow: 2px 2px 0px rgba(0, 0, 0, 0.3);
+    }
+
+    .topic-selection-content .subtitle {
+      color: #d8b4fe;
+      text-align: center;
+      margin-bottom: 2rem;
+      font-size: 1rem;
+    }
+
+    .topic-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .topic-card {
+      background: #ad54e0;
+      color: white;
+      padding: 2rem 1.25rem;
+      border-radius: 1rem;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s;
+      border: 3px solid transparent;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .topic-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: repeating-linear-gradient(
+        45deg,
+        transparent,
+        transparent 10px,
+        rgba(255, 255, 255, 0.05) 10px,
+        rgba(255, 255, 255, 0.05) 20px
+      );
+      pointer-events: none;
+    }
+
+    .topic-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 20px rgba(173, 84, 224, 0.4);
+    }
+
+    .topic-card.selected {
+      border-color: #28a745;
+      box-shadow: 0 0 0 3px rgba(40, 167, 69, 0.3);
+      background: #8b3fc5;
+    }
+
+    .topic-icon {
+      font-size: 2.5rem;
+      margin-bottom: 0.75rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    .topic-name {
+      font-size: 1.125rem;
+      font-weight: 700;
+      margin-bottom: 0.375rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    .topic-desc {
+      font-size: 0.813rem;
+      opacity: 0.9;
+      position: relative;
+      z-index: 1;
+    }
+
+    .confirm-topic-btn {
+      background: #28a745;
+      color: white;
+      border: none;
+      padding: 0.875rem 2.5rem;
+      border-radius: 2rem;
+      font-size: 1.125rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: block;
+      margin: 0 auto;
+      transition: all 0.3s;
+    }
+
+    .confirm-topic-btn:hover:not(:disabled) {
+      background: #218838;
+      transform: scale(1.05);
+    }
+
+    .confirm-topic-btn:disabled {
+      background: #6c757d;
+      cursor: not-allowed;
+      opacity: 0.5;
+    }
+
+    /* Countdown Overlay */
+    .countdown-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.95);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 2000;
+      display: none;
+    }
+
+    .countdown-number {
+      font-size: 10rem;
+      font-weight: 700;
+      color: white;
+      font-family: 'Courier New', monospace;
+      animation: countdownPulse 1s ease;
+    }
+
+    @keyframes countdownPulse {
+      0% { transform: scale(0.5); opacity: 0; }
+      50% { transform: scale(1.2); opacity: 1; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    .countdown-go {
+      font-size: 8rem;
+      font-weight: 700;
+      color: #28a745;
+      font-family: 'Courier New', monospace;
+      animation: countdownGo 1s ease;
+    }
+
+    @keyframes countdownGo {
+      0% { transform: scale(0.5); opacity: 0; }
+      50% { transform: scale(1.3); opacity: 1; }
+      100% { transform: scale(1); opacity: 0; }
+    }
+
+    /* Main Game Area */
+    .main-container {
+      position: relative;
+      min-height: 100vh;
+      padding: 6rem 1rem 2rem;
+      z-index: 10;
+    }
+
+    .battle-title {
+      text-align: center;
+      font-size: 1.75rem;
+      font-weight: bold;
+      color: #f4e04d;
+      font-family: 'Courier New', monospace;
+      text-shadow: 2px 2px 0px rgba(0, 0, 0, 0.3);
+      margin-bottom: 1.5rem;
+      max-width: 80rem;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .battle-title .emoji {
+      display: inline-block;
+      margin: 0 0.5rem;
+      animation: rotate-emoji 2s infinite;
+    }
+
+    /* Racing Progress Bars */
+    .progress-container {
+      max-width: 80rem;
+      margin: 0 auto 2rem;
+      background: rgba(74, 34, 105, 0.5);
+      backdrop-filter: blur(10px);
+      padding: 1.5rem;
+      border-radius: 1rem;
+      border: 2px solid rgba(244, 228, 77, 0.2);
+    }
+
+    .progress-player {
+      margin-bottom: 1.25rem;
+    }
+
+    .progress-player:last-child {
+      margin-bottom: 0;
+    }
+
+    .progress-header {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .progress-avatar {
+      width: 2.5rem;
+      height: 2.5rem;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.25rem;
+      transition: all 0.3s;
+    }
+
+    .progress-avatar.player1 {
+      background: #4ade80;
+    }
+
+    .progress-avatar.player2 {
+      background: #60a5fa;
+    }
+
+    .progress-avatar.complete {
+      background: #fbbf24;
+      animation: winner-pulse 0.5s infinite;
+    }
+
+    @keyframes winner-pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.2); }
+    }
+
+    .progress-label {
+      color: white;
+      font-weight: bold;
+      font-size: 1.125rem;
+      font-family: 'Courier New', monospace;
+    }
+
+    .progress-percent {
+      margin-left: auto;
+      font-size: 1.125rem;
+      font-weight: bold;
+      font-family: 'Courier New', monospace;
+    }
+
+    .progress-percent.player1 {
+      color: #4ade80;
+    }
+
+    .progress-percent.player2 {
+      color: #60a5fa;
+    }
+
+    .progress-bar-bg {
+      position: relative;
+      height: 1.5rem;
+      background: rgba(58, 16, 87, 0.8);
+      backdrop-filter: blur(10px);
+      border-radius: 9999px;
+      overflow: hidden;
+      border: 2px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      transition: width 0.3s ease;
+      position: relative;
+    }
+
+    .progress-bar-fill::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: rgba(255, 255, 255, 0.3);
+      animation: progress-shimmer 1s linear infinite;
+    }
+
+    @keyframes progress-shimmer {
+      0% { transform: translateX(-100%); }
+      100% { transform: translateX(100%); }
+    }
+
+    .progress-bar-fill.player1 {
+      background: linear-gradient(to right, #4ade80, #22c55e);
+    }
+
+    .progress-bar-fill.player2 {
+      background: linear-gradient(to right, #60a5fa, #3b82f6);
+    }
+
+    .finish-line {
+      position: absolute;
+      right: 0.5rem;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 1.125rem;
+      z-index: 1;
+    }
+
+    .vs-divider {
+      text-align: center;
+      padding: 0.5rem 0;
+      margin: 0.5rem 0;
+    }
+
+    .vs-text {
+      font-size: 2rem;
+      font-weight: bold;
+      color: #f87171;
+      font-family: 'Courier New', monospace;
+      animation: vs-pulse 1s infinite;
+      text-shadow: 0 0 20px rgba(248, 113, 113, 0.5);
+    }
+
+    @keyframes vs-pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.2); }
+    }
+
+    /* Player Columns */
+    .players-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+      gap: 1.5rem;
+      max-width: 112rem;
+      margin: 0 auto;
+    }
+
+    .player-column {
+      background: rgba(74, 34, 105, 0.7);
+      backdrop-filter: blur(10px);
+      border-radius: 1.5rem;
+      padding: 1.5rem;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+      border: 2px solid rgba(255, 255, 255, 0.1);
+      transition: all 0.3s ease;
+    }
+
+    .player-column.you {
+      border-color: rgba(74, 222, 128, 0.5);
+      box-shadow: 0 0 30px rgba(74, 222, 128, 0.2);
+    }
+
+    .player-column.opponent {
+      border-color: rgba(96, 165, 250, 0.5);
+      box-shadow: 0 0 30px rgba(96, 165, 250, 0.2);
+    }
+
+    .player-column.winner {
+      border-color: rgba(251, 191, 36, 0.8);
+      box-shadow: 0 0 40px rgba(251, 191, 36, 0.5);
+      animation: winner-glow 2s infinite;
+    }
+
+    @keyframes winner-glow {
+      0%, 100% {
+        box-shadow: 0 0 30px rgba(251, 191, 36, 0.5);
+      }
+      50% {
+        box-shadow: 0 0 50px rgba(251, 191, 36, 0.8);
+      }
+    }
+
+    .player-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+      padding-bottom: 1rem;
+      border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .player-title {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: white;
+      font-family: 'Courier New', monospace;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .player-indicator {
+      width: 1rem;
+      height: 1rem;
+      border-radius: 50%;
+      animation: pulse-indicator 2s infinite;
+    }
+
+    .player-indicator.player1 {
+      background: #4ade80;
+    }
+
+    .player-indicator.player2 {
+      background: #60a5fa;
+    }
+
+    @keyframes pulse-indicator {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+
+    .player-badge {
+      background: #667eea;
+      color: white;
+      padding: 0.375rem 0.875rem;
+      border-radius: 1rem;
+      font-size: 0.688rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .player-badge.you {
+      background: #28a745;
+    }
+
+    .player-badge.opponent {
+      background: #6c757d;
+    }
+
+    .question-display {
+      background: rgba(26, 10, 46, 0.8);
+      padding: 1.25rem;
+      border-radius: 0.75rem;
+      margin-bottom: 1rem;
+      border-left: 4px solid #f4e04d;
+      min-height: 400px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .question-title {
+      font-size: 0.875rem;
+      color: #f4e04d;
+      margin-bottom: 1rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      font-family: 'Courier New', monospace;
+      letter-spacing: 0.05em;
+    }
+
+    .code-snippet {
+      background: #1a0a2e;
+      color: #abb2bf;
+      padding: 1.25rem;
+      border-radius: 0.5rem;
+      font-family: 'Courier New', monospace;
+      font-size: 0.875rem;
+      line-height: 1.8;
+      overflow-x: auto;
+      white-space: pre;
+      flex: 1;
+    }
+
+    /* Blur opponent's code */
+    #opponentCode {
+      filter: blur(4px);
+      pointer-events: none;
+      user-select: none;
+    }
+
+    .blank-input {
+      display: inline-block;
+      background: #1e2127;
+      border: 2px solid #61afef;
+      border-radius: 4px;
+      padding: 4px 10px;
+      font-size: 0.875rem;
+      font-family: 'Courier New', monospace;
+      min-width: 100px;
+      max-width: 200px;
+      text-align: center;
+      outline: none;
+      transition: all 0.3s;
+      color: #e06c75;
+      font-weight: bold;
+      vertical-align: middle;
+    }
+
+    .blank-input:focus {
+      border-color: #c678dd;
+      box-shadow: 0 0 0 3px rgba(198, 120, 221, 0.3);
+      background: #282c34;
+    }
+
+    .blank-input.filled {
+      border-color: #61afef;
+      color: #98c379;
+    }
+
+    .blank-input.correct {
+      border-color: #98c379;
+      background: #2c3e2f;
+      color: #98c379;
+    }
+
+    .blank-input.incorrect {
+      border-color: #e06c75;
+      background: #3e2c2c;
+      color: #e06c75;
+    }
+
+    /* Opponent inputs remain neutral */
+    #opponentCode .blank-input.filled,
+    #opponentCode .blank-input.correct,
+    #opponentCode .blank-input.incorrect {
+      border-color: #61afef;
+      color: #abb2bf;
+      background: #1e2127;
+    }
+
+    .blank-input:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+    }
+
+    .submit-section {
+      display: flex;
+      gap: 0.75rem;
+    }
+
+    .submit-btn {
+      flex: 1;
+      background: linear-gradient(to right, #667eea, #764ba2);
+      color: white;
+      border: none;
+      padding: 0.875rem;
+      border-radius: 0.75rem;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s;
+      font-family: 'Courier New', monospace;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+    }
+
+    .submit-btn:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+    }
+
+    .submit-btn:disabled {
+      background: #6c757d;
+      cursor: not-allowed;
+      opacity: 0.5;
+      box-shadow: none;
+    }
+
+    /* Winner Modal */
+    .winner-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.95);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 3000;
+      display: none;
+    }
+
+    .winner-modal {
+      background: rgba(74, 34, 105, 0.98);
+      backdrop-filter: blur(20px);
+      padding: 4rem 3rem;
+      border-radius: 2rem;
+      text-align: center;
+      max-width: 600px;
+      width: 90%;
+      animation: modalPop 0.5s ease;
+      border: 2px solid rgba(244, 228, 77, 0.3);
+      box-shadow: 0 0 60px rgba(244, 228, 77, 0.3);
+    }
+
+    .winner-icon {
+      font-size: 6rem;
+      margin-bottom: 1.5rem;
+      animation: winner-icon-bounce 1s ease infinite;
+    }
+
+    @keyframes winner-icon-bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+
+    .winner-title {
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: #f4e04d;
+      margin-bottom: 1rem;
+      font-family: 'Courier New', monospace;
+      text-shadow: 2px 2px 0px rgba(0, 0, 0, 0.3);
+    }
+
+    .winner-time {
+      font-size: 3rem;
+      font-weight: 700;
+      color: #4ade80;
+      font-family: 'Courier New', monospace;
+      margin-bottom: 2rem;
+      text-shadow: 0 0 20px rgba(74, 222, 128, 0.5);
+    }
+
+    .winner-btns {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+    }
+
+    .winner-btn {
+      padding: 0.875rem 2rem;
+      border: none;
+      border-radius: 2rem;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .menu-btn {
+      background: linear-gradient(to right, #667eea, #764ba2);
+      color: white;
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+    }
+
+    .menu-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    /* Responsive */
+    @media (max-width: 1024px) {
+      .players-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .header h1 {
+        font-size: 1.25rem;
+      }
+
+      .battle-title {
+        font-size: 1.5rem;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .main-container {
+        padding-top: 8rem;
+      }
+
+      .header {
+        padding: 0.75rem 1rem;
+      }
+
+      .header h1 {
+        font-size: 1rem;
+      }
+
+      .back-button {
+        width: 2.5rem;
+        height: 2.5rem;
+      }
+
+      .back-button svg {
+        width: 1.25rem;
+        height: 1.25rem;
+      }
+
+      .timer {
+        padding: 0.5rem 1.25rem;
+      }
+
+      .timer-text {
+        font-size: 1.125rem;
+      }
+
+      .countdown-number {
+        font-size: 6rem;
+      }
+
+      .countdown-go {
+        font-size: 5rem;
+      }
+
+      .winner-icon {
+        font-size: 4rem;
+      }
+
+      .winner-title {
+        font-size: 2rem;
+      }
+
+      .winner-time {
+        font-size: 2rem;
+      }
+
+      .topic-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Animated Background -->
+  <div class="particle-bg" id="particleBg"></div>
+
+  <!-- Decorative Grid -->
+  <div class="grid-decoration">
+    <div class="grid-container" id="gridContainer"></div>
+  </div>
+
+  <!-- Header -->
+  <div class="header">
+    <div class="header-content">
+      <a href="menu.html" class="back-button">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+        </svg>
+      </a>
+      
+      <h1>
+        <span class="emoji">⚔️</span>
+        Multiplayer Battle
+      </h1>
+
+      <div class="status-bar">
+        <div class="status-item" id="statusIndicator">Connecting...</div>
+        <div class="timer">
+          <div class="timer-text" id="timer">00:00</div>
+        </div>
+        <button class="cancel-button hidden" id="cancelButton">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Waiting for Opponent Overlay -->
+  <div class="connection-overlay" id="waitingOverlay">
+    <div class="connection-message">
+      <div class="spinner"></div>
+      <h2 id="waitingMessage">Waiting for opponent...</h2>
+      <p>Share the URL with a friend to start the battle!</p>
+      <button class="cancel-button" id="cancelWaiting">Cancel & Return to Menu</button>
+    </div>
+  </div>
+
+  <!-- Topic Selection Overlay -->
+  <div class="topic-selection-overlay" id="topicSelectionOverlay">
+    <div class="topic-selection-content">
+      <h2>📚 Choose Battle Topic</h2>
+      <p class="subtitle">Select a topic for this epic battle</p>
+      
+      <div class="topic-grid">
+        <div class="topic-card" data-topic="html_js">
+          <div class="topic-icon">🌐</div>
+          <div class="topic-name">HTML & JavaScript</div>
+          <div class="topic-desc">Web development fundamentals</div>
+        </div>
+        
+        <div class="topic-card" data-topic="oop">
+          <div class="topic-icon">🎯</div>
+          <div class="topic-name">OOP</div>
+          <div class="topic-desc">Object-Oriented Programming</div>
+        </div>
+        
+        <div class="topic-card" data-topic="sql">
+          <div class="topic-icon">🗄️</div>
+          <div class="topic-name">SQL</div>
+          <div class="topic-desc">Database queries & management</div>
+        </div>
+
+        <div class="topic-card" data-topic="c++">
+          <div class="topic-icon">💻</div>
+          <div class="topic-name">C++</div>
+          <div class="topic-desc">Programming fundamentals</div>
+        </div>
+
+        <div class="topic-card" data-topic="python">
+          <div class="topic-icon">🐍</div>
+          <div class="topic-name">Python</div>
+          <div class="topic-desc">Data science and machine learning</div>
+        </div>
+
+        <div class="topic-card" data-topic="csharp">
+          <div class="topic-icon">💻</div>
+          <div class="topic-name">C#</div>
+          <div class="topic-desc">Primary language for Unity</div>
+        </div>
+      </div>
+      
+      <button class="confirm-topic-btn" id="confirmTopicBtn" disabled>Confirm Topic →</button>
+    </div>
+  </div>
+
+  <!-- Countdown Overlay (3-2-1-GO!) -->
+  <div class="countdown-overlay" id="countdownOverlay">
+    <div class="countdown-number" id="countdownNumber">3</div>
+  </div>
+
+  <!-- Winner Overlay -->
+  <div class="winner-overlay" id="winnerOverlay">
+    <div class="winner-modal">
+      <div class="winner-icon" id="winnerIcon">🏆</div>
+      <div class="winner-title" id="winnerTitle">You Win!</div>
+      <div class="winner-time" id="winnerTime">00:00</div>
+      <div class="winner-btns">
+        <button class="winner-btn menu-btn" onclick="location.href='menu.html'">Back to Menu</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Game Area -->
+  <div class="main-container">
+    <!-- Battle Title -->
+    <h1 class="battle-title">
+      <span class="emoji">⚔️</span>
+      Battle Challenge: First to finish wins!
+    </h1>
+
+    <!-- Racing Progress Bars -->
+    <div class="progress-container">
+      <!-- Player 1 Racing Bar -->
+      <div class="progress-player">
+        <div class="progress-header">
+          <div class="progress-avatar player1" id="yourAvatar">🏃</div>
+          <span class="progress-label" id="yourNameLabel">You</span>
+          <span class="progress-percent player1" id="yourProgressPercent">0%</span>
+        </div>
+        <div class="progress-bar-bg">
+          <div class="progress-bar-fill player1" id="yourProgress" style="width: 0%"></div>
+          <div class="finish-line">🏁</div>
+        </div>
+      </div>
+
+      <!-- VS Divider -->
+      <div class="vs-divider">
+        <span class="vs-text">VS</span>
+      </div>
+
+      <!-- Player 2 Racing Bar -->
+      <div class="progress-player">
+        <div class="progress-header">
+          <div class="progress-avatar player2" id="opponentAvatar">🏃</div>
+          <span class="progress-label" id="opponentNameLabel">Opponent</span>
+          <span class="progress-percent player2" id="opponentProgressPercent">0%</span>
+        </div>
+        <div class="progress-bar-bg">
+          <div class="progress-bar-fill player2" id="opponentProgress" style="width: 0%"></div>
+          <div class="finish-line">🏁</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Players Grid -->
+    <div class="players-grid">
+      <!-- Your Side -->
+      <div class="player-column you" id="yourCard">
+        <div class="player-header">
+          <div class="player-title">
+            <div class="player-indicator player1"></div>
+            <span id="yourName">YOU</span>
+          </div>
+          <div class="player-badge you">YOU</div>
+        </div>
+        
+        <div class="question-display">
+          <div class="question-title" id="yourQuestion">Loading challenge...</div>
+          <div class="code-snippet" id="yourCode"></div>
+        </div>
+        
+        <div class="submit-section">
+          <button class="submit-btn" id="submitButton" disabled>Submit Answer</button>
+        </div>
+      </div>
+
+      <!-- Opponent Side -->
+      <div class="player-column opponent" id="opponentCard">
+        <div class="player-header">
+          <div class="player-title">
+            <div class="player-indicator player2"></div>
+            <span id="opponentName">OPPONENT</span>
+          </div>
+          <div class="player-badge opponent">OPPONENT</div>
+        </div>
+        
+        <div class="question-display">
+          <div class="question-title" id="opponentQuestion">Waiting for opponent...</div>
+          <div class="code-snippet" id="opponentCode"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="multiplayer-client-battle.js"></script>
+  <script>
+    // Generate animated particles
+    const particleBg = document.getElementById('particleBg');
+    for (let i = 0; i < 40; i++) {
+      const particle = document.createElement('div');
+      particle.className = 'particle';
+      particle.style.left = Math.random() * 100 + '%';
+      particle.style.top = Math.random() * 100 + '%';
+      particle.style.animationDelay = Math.random() * 4 + 's';
+      particle.style.animationDuration = (4 + Math.random() * 8) + 's';
+      particleBg.appendChild(particle);
+    }
+
+    // Generate grid decoration
+    const gridContainer = document.getElementById('gridContainer');
+    for (let i = 0; i < 64; i++) {
+      const dot = document.createElement('div');
+      dot.className = 'grid-dot';
+      dot.style.animationDelay = (i * 0.05) + 's';
+      gridContainer.appendChild(dot);
+    }
+
+    // Enhanced progress updates with avatar changes
+    const originalUpdateProgress = window.updateProgress;
+    if (typeof originalUpdateProgress === 'function') {
+      window.updateProgress = function() {
+        originalUpdateProgress();
+        
+        // Update progress percentage display
+        const yourProgressBar = document.getElementById('yourProgress');
+        if (yourProgressBar) {
+          const progress = parseFloat(yourProgressBar.style.width) || 0;
+          const yourProgressPercent = document.getElementById('yourProgressPercent');
+          if (yourProgressPercent) {
+            yourProgressPercent.textContent = Math.round(progress) + '%';
+          }
+          
+          // Change avatar to crown when complete
+          const yourAvatar = document.getElementById('yourAvatar');
+          if (yourAvatar && progress === 100) {
+            yourAvatar.textContent = '👑';
+            yourAvatar.classList.add('complete');
+          }
+        }
+      };
+    }
+
+    // Enhanced opponent progress handler
+    const originalHandleOpponentProgress = window.handleOpponentProgress;
+    if (typeof originalHandleOpponentProgress === 'function') {
+      window.handleOpponentProgress = function(data) {
+        originalHandleOpponentProgress(data);
+        
+        // Update opponent progress percentage display
+        const opponentProgressPercent = document.getElementById('opponentProgressPercent');
+        if (opponentProgressPercent) {
+          opponentProgressPercent.textContent = Math.round(data.progress) + '%';
+        }
+        
+        // Change opponent avatar to crown when complete
+        const opponentAvatar = document.getElementById('opponentAvatar');
+        if (opponentAvatar && data.progress === 100) {
+          opponentAvatar.textContent = '👑';
+          opponentAvatar.classList.add('complete');
+        }
+      };
+    }
+
+    // Add timer warning effect
+    const timerElement = document.getElementById('timer');
+    const timerTextElement = timerElement;
+    
+    setInterval(() => {
+      const timerText = timerElement.textContent;
+      const parts = timerText.split(':');
+      const minutes = parseInt(parts[0]);
+      const seconds = parseInt(parts[1]);
+      const totalSeconds = minutes * 60 + seconds;
+      
+      if (totalSeconds > 0 && totalSeconds <= 60) {
+        timerElement.parentElement.classList.add('warning');
+        timerTextElement.classList.add('warning');
+      }
+    }, 1000);
+  </script>
+</body>
+</html>
