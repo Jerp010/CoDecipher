@@ -622,15 +622,39 @@ server.listen(PORT, async () => {
   console.log("\n🚀 Hackathon Server Started!");
   console.log(`📍 Local URL: http://localhost:${PORT}`);
 
+  // Load ngrok authtoken from config or environment
+  const ngrokConfigPath = path.join(process.env.HOME || process.env.USERPROFILE, ".ngrok2", "ngrok.yml");
+  let ngrokAuthtoken = process.env.NGROK_AUTHTOKEN;
+  
+  if (!ngrokAuthtoken) {
+    try {
+      const ngrokConfig = await fs.readFile(ngrokConfigPath, 'utf8');
+      const match = ngrokConfig.match(/authtoken:\s*(\S+)/);
+      if (match) {
+        ngrokAuthtoken = match[1];
+      }
+    } catch (e) {
+      // Config file not found, will try without token
+    }
+  }
+
   try {
     console.log("\n🌐 Creating ngrok tunnel...");
-    const listener = await ngrok.forward({
+    const ngrokOptions = {
       addr: PORT,
-      authtoken_from_env: true,
-    });
+    };
+    
+    if (ngrokAuthtoken) {
+      ngrokOptions.authtoken = ngrokAuthtoken;
+    }
+    
+    const listener = await ngrok.forward(ngrokOptions);
     ngrokUrl = listener.url();
     console.log("✅ Ngrok tunnel created:", ngrokUrl);
   } catch (error) {
     console.log("⚠️ Ngrok tunnel failed:", error.message);
+    console.log("\n📝 To enable ngrok, either:");
+    console.log("   1. Run: ngrok config add-authtoken YOUR_AUTH_TOKEN");
+    console.log("   2. Or set environment variable: set NGROK_AUTHTOKEN=YOUR_AUTH_TOKEN");
   }
 });
