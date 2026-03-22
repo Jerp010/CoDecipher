@@ -1,34 +1,32 @@
 [
   {
     "id": 1,
-    "type": "frontend_backend",
-    "category": "HTML + PHP",
-    "description": "Create a contact form using HTML for the frontend and PHP for backend processing.\nHints: Use a <form> with method POST and action pointing to your PHP file. Use input type=\"text\" for name and input type=\"email\" for email. Use <textarea> for the message. On the backend, check $_SERVER['REQUEST_METHOD'] === 'POST'. Access submitted values via $_POST['fieldname']. Validate the email using FILTER_VALIDATE_EMAIL and send the message using the mail() function.",
-    "player1": {
-      "role": "Frontend (HTML Form)",
-      "code": "<___ action=\"process.php\" method=\"___\">\n  <label for=\"name\">Name:</label>\n  <input type=\"___\" id=\"name\" name=\"___\" required>\n  \n  <label for=\"email\">Email:</label>\n  <input type=\"___\" id=\"email\" name=\"email\" required>\n  \n  <label for=\"message\">Message:</label>\n  <___ id=\"message\" name=\"message\" required></___>\n  \n  <button type=\"___\">Send</button>\n</form>",
-      "blanks": ["form", "POST", "text", "name", "email", "textarea", "textarea", "submit"]
+  "type": "frontend_backend",
+  "category": "HTML + PHP",
+  "description": "Create a contact form using HTML for the frontend and PHP for backend processing.",
+  "player1": {
+    "role": "Frontend (HTML Form)",
+    "code": "<___ action=\"process.php\" method=\"___\">\n  <label>___</label>\n  <input type=\"___\" name=\"___\" required>\n\n  <label>___</label>\n  <input type=\"___\" name=\"email\" required>\n\n  <label>___</label>\n  <___ name=\"message\" required></___>\n\n  <___ type=\"___\">___</___>\n</___>",
+    "blanks": [
+      "form",
+      "POST",
+      "Name",
+      "text",
+      "name",
+      "Email",
+      "email",
+      "Message",
+      "textarea",
+      "textarea",
+      "button",
+      "submit",
+      "Send",
+      "form" ]
     },
     "player2": {
       "role": "Backend (PHP Processing)",
-      "code": "<?php\nif (___SERVER['REQUEST_METHOD'] === '___') {\n  $name = ___POST['name'];\n  $email = $_POST['___'];\n  $message = $_POST['message'];\n  \n  // Validate email\n  if (!filter_var($email, FILTER_VALIDATE___)) {\n    die('Invalid email');\n  }\n  \n  // Send email\n  $to = 'admin@example.com';\n  $subject = 'Contact from ' . ___;\n  ___(___to, $subject, $message);\n  \n  echo 'Message sent!';\n}\n?>",
-      "blanks": ["$_", "POST", "$_", "email", "_EMAIL", "$name", "mail", "$"]
-    }
-  },
-  {
-    "id": 2,
-    "type": "frontend_backend",
-    "category": "HTML + PHP",
-    "description": "Build a registration form that submits user data to a database using PHP.\nHints: Create a <form> with input fields for username, email, password, and confirm password. Use POST method. On the backend, access submitted data via $_POST. Hash the password using password_hash() before storing. Connect to MySQL using mysqli. Use prepared statements to insert data safely. Bind parameters in the correct order: username, email, hashed password. Execute the statement and confirm registration.",
-    "player1": {
-      "role": "Frontend (Registration Form)",
-      "code": "<form action=\"register.php\" method=\"post\">\n  <input type=\"text\" name=\"___\" placeholder=\"Username\" required>\n  <input type=\"___\" name=\"email\" placeholder=\"Email\" required>\n  <input type=\"___\" name=\"password\" placeholder=\"Password\" required>\n  <input type=\"password\" name=\"___\" placeholder=\"Confirm Password\" required>\n  <button type=\"submit\">___</button>\n</form>",
-      "blanks": ["username", "email", "password", "confirm_password", "Register"]
-    },
-    "player2": {
-      "role": "Backend (PHP Registration)",
-      "code": "<?php\n$username = $_POST['___'];\n$email = $_POST['email'];\n$password = ___POST['password'];\n\n// Hash password\n$hashed = password_hash(___, PASSWORD_DEFAULT);\n\n// Database connection\n$conn = new mysqli('localhost', 'root', '', '___');\n\n// Insert user\n$sql = \"INSERT INTO users (username, email, password) VALUES (___, ___, ___)\";\n$stmt = $conn->prepare(___);\n$stmt->bind_param('___', $username, $email, $hashed);\n$stmt->___();\n\necho 'Registration successful!';\n?>",
-      "blanks": ["username", "$_", "$password", "mydb", "'$username'", "'$email'", "'$hashed'", "$sql", "sss", "execute"]
+      "code": "<?php\nif ($_SERVER['REQUEST_METHOD'] === '___') {\n  $name = $_POST['___'];\n  $email = $_POST['___'];\n  $message = $_POST['___'];\n\n  if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {\n    die('Invalid email');\n  }\n\n  mail('admin@example.com', 'Contact from ' . $name, $message);\n}\n?>",
+      "blanks": ["POST", "name", "email", "message"]
     }
   },
   {

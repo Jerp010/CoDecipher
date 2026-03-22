@@ -325,43 +325,45 @@ function displayCoopCode(question) {
 }
 
 // Create Code with Blanks (Frontend/Backend mode)
-function createCodeWithBlanks(codeText, editable) {
-  let blankIndex = 0;
-  let html = String(codeText || ''); // Ensure it's a string
-  
-  // Replace ___ with input fields
-  html = html.replace(/___/g, () => {
-    if (editable) {
-      return `<input type="text" class="blank-input my-blank" data-index="${blankIndex++}" autocomplete="off" spellcheck="false">`;
-    } else {
-      return `<span class="blank-placeholder">___</span>`;
-    }
-  });
-  
-  return html;
+function escapeHTML(str) {
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
 }
 
-// Create Backend Code with Specific Blanks (Backend-to-Backend mode)
+function createCodeWithBlanks(codeText, editable) {
+  let blankIndex = 0;
+  const escaped = escapeHTML(String(codeText));
+
+  return escaped.replace(/___/g, () => {
+    if (!editable) return `<span class="blank-placeholder">___</span>`;
+    return `<input
+      type="text"
+      class="blank-input my-blank"
+      data-index="${blankIndex++}"
+      value=""
+      autocomplete="off"
+      spellcheck="false">`;
+  });
+}
+
+
 function createBackendCodeWithBlanks(codeText, blankType, editable) {
   let blankIndex = 0;
-  let html = String(codeText || ''); // Ensure it's a string
-  
-  // Replace only the blanks for this player
-  html = html.replace(/P1_BLANK|P2_BLANK/g, (match) => {
-    if (match === blankType) {
-      if (editable) {
-        return `<input type="text" class="blank-input my-blank" data-index="${blankIndex++}" autocomplete="off" spellcheck="false">`;
-      } else {
-        return `<span class="blank-placeholder">___</span>`;
-      }
-    } else {
-      // Other player's blank - show as placeholder
-      return `<span class="blank-filled">•••</span>`;
-    }
+
+  return String(codeText).replace(/P1_BLANK|P2_BLANK/g, match => {
+    if (match !== blankType) return `<span class="blank-filled">•••</span>`;
+    if (!editable) return `<span class="blank-placeholder">___</span>`;
+    return `<input type="text"
+      class="blank-input my-blank"
+      data-index="${blankIndex++}"
+      value=""
+      autocomplete="off"
+      spellcheck="false">`;
   });
-  
-  return html;
 }
+
 
 // Setup My Blank Inputs
 function setupMyInputs() {

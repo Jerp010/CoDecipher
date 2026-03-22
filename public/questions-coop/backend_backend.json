@@ -3,15 +3,15 @@
     "id": 1,
     "type": "both_backends",
     "category": "Backend to Backend",
-    "description": "Complete a REST API login endpoint with authentication using JWT.\nHints: Access POST data via req.body. Find a user using User.findOne({ username }). Compare the password using bcrypt.compare(). Return 404 if user not found. Generate a token using jwt.sign() with a secret from environment variables (JWT_SECRET) and expiration time ('24h'). Return the token in the response.",
-    "shared_code": "const express = require('express');\nconst jwt = require('jsonwebtoken');\nconst bcrypt = require('bcrypt');\n\napp.post('/api/login', async (req, res) => {\n  const { username, password } = req.P1_BLANK;\n  \n  // Find user\n  const user = await User.P1_BLANK({ username });\n  if (!user) {\n    return res.status(P2_BLANK).json({ error: 'User not found' });\n  }\n  \n  // Check password\n  const isValid = await bcrypt.P1_BLANK(password, user.password);\n  if (!P2_BLANK) {\n    return res.status(401).json({ error: 'P2_BLANK password' });\n  }\n  \n  // Generate token\n  const token = jwt.P1_BLANK(\n    { userId: user.id },\n    process.env.P2_BLANK,\n    { expiresIn: 'P2_BLANK' }\n  );\n  \n  res.json({ P1_BLANK });\n});",
+    "description": "Complete a REST API login endpoint with authentication using JWT.",
+    "shared_code": "app.post('/api/login', async (req, res) => {\n  const { username, password } = req.P1_BLANK;\n\n  const user = await User.P1_BLANK({ username });\n  if (!user) {\n    return res.status(P2_BLANK).json({ error: 'User not found' });\n  }\n\n  const isValid = await bcrypt.P1_BLANK(password, user.password);\n  if (!P2_BLANK) {\n    return res.status(401).json({ error: 'Invalid password' });\n  }\n\n  const token = jwt.P1_BLANK(\n    { userId: user.id },\n    process.env.P2_BLANK,\n    { expiresIn: 'P2_BLANK' }\n  );\n\n  res.json({ token });\n});",
     "player1": {
       "blanks_positions": ["P1_BLANK"],
-      "answers": ["body", "findOne", "compare", "sign", "token"]
+      "answers": ["body", "findOne", "compare", "sign"]
     },
     "player2": {
       "blanks_positions": ["P2_BLANK"],
-      "answers": ["404", "isValid", "Invalid", "JWT_SECRET", "24h"]
+      "answers": ["404", "isValid", "JWT_SECRET", "24h"]
     }
   },
   {

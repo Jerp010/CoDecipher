@@ -3,7 +3,7 @@
     "id": 1,
     "type": "frontend_backend",
     "category": "JavaScript + React",
-    "description": "Create a React counter component where Player 1 handles the UI, and Player 2 handles the increment logic. \nHints: Import useState from React. State variables come in [value, setter] format. Use the button's onClick to call the handler function that updates state. Use the setter function to increment the count by 1.",
+    "description": "Create a React counter component where Player 1 handles the UI, and Player 2 handles the increment logic.",
     "player1": {
       "role": "Frontend (React Component)",
       "code": "import React, { ___ } from 'react';\n\nfunction Counter() {\n  const [count, ___] = ___(0);\n\n  return (\n    <div>\n      <h1>Count: {___}</h1>\n      <button onClick={handleIncrement}>___</button>\n    </div>\n  );\n}\n\nexport default Counter;",
@@ -11,7 +11,7 @@
     },
     "player2": {
       "role": "Backend (Event Handler)",
-      "code": "// Player 1's completed component above\n\nfunction Counter() {\n  const [count, setCount] = useState(0);\n\n  const handleIncrement = () => {\n    ___(___ + ___);\n  };\n\n  return (\n    <div>\n      <h1>Count: {count}</h1>\n      <button onClick={___}>Increment</button>\n    </div>\n  );\n}",
+      "code": "function Counter() {\n  const [count, setCount] = useState(0);\n\n  const handleIncrement = () => {\n    ___(___ + ___);\n  };\n\n  return (\n    <div>\n      <h1>Count: {count}</h1>\n      <button onClick={___}>Increment</button>\n    </div>\n  );\n}",
       "blanks": ["setCount", "count", "1", "handleIncrement"]
     }
   },
