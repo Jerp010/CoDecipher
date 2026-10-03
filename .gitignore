@@ -1,1 +1,18 @@
-node_modules
+# Dependencies
+node_modules/
+
+# Environment configuration 
+.env
+.env.local
+
+# AI/agent tool workspace state 
+.kilo/
+.freebuff/
+
+# OS artifacts
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*

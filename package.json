@@ -1,16 +1,28 @@
 {
-  "name": "hackathon---multiplayer",
+  "name": "codecipher",
   "version": "1.0.0",
-  "description": "Hackathon Jam 2026\r Barney and Friends",
+  "description": "CoDecipher - multiplayer fill-in-the-blank coding quiz game (Hackathon Jam 2026, Barney and Friends)",
   "main": "server/index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server/index.js"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "private": true,
+  "keywords": [
+    "coding",
+    "quiz",
+    "multiplayer",
+    "education",
+    "hackathon"
+  ],
+  "author": "Barney and Friends",
+  "license": "MIT",
   "type": "commonjs",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "start": "node server/index.js",
+    "dev": "nodemon server/index.js",
+    "validate": "node scripts/validate-questions.js",
+    "test": "npm run validate"
+  },
   "dependencies": {
     "@ngrok/ngrok": "^1.7.0",
     "dotenv": "^18.0.5",
