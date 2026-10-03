@@ -1,27 +1,18 @@
-const path = require('path');
-const fs = require('fs').promises;
+/**
+ * Environment configuration.
+ *
+ * Loads .env from the project root (if present) and exposes the settings
+ * the server needs. See .env.example for the available variables.
+ */
+require('dotenv').config({ quiet: true });
 
 const port = Number(process.env.PORT) || 3000;
 
-// Authtoken from the environment (see .env support added in the config commit).
+// ngrok tunnel authtoken (https://dashboard.ngrok.com/get-started/your-authtoken)
 const ngrokAuthtoken = process.env.NGROK_AUTHTOKEN || null;
 
-// Legacy fallback location of the ngrok CLI config (parity with the original
-// server.js startup; removed once .env-based config lands).
-const NGROK_YML_PATH = path.join(
-  process.env.HOME || process.env.USERPROFILE || '',
-  '.ngrok2',
-  'ngrok.yml',
-);
+// Opt-in tunnel: set NGROK_ENABLED=false to force local-only mode even when
+// an authtoken is present. Default (unset) is enabled when a token exists.
+const ngrokEnabled = process.env.NGROK_ENABLED !== 'false';
 
-async function readNgrokAuthtokenFromYml() {
-  try {
-    const config = await fs.readFile(NGROK_YML_PATH, 'utf8');
-    const match = config.match(/authtoken:\s*(\S+)/);
-    return match ? match[1] : null;
-  } catch {
-    return null;
-  }
-}
-
-module.exports = { port, ngrokAuthtoken, readNgrokAuthtokenFromYml };
+module.exports = { port, ngrokAuthtoken, ngrokEnabled };
