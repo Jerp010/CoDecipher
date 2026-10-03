@@ -2,10 +2,10 @@
   "name": "hackathon---multiplayer",
   "version": "1.0.0",
   "description": "Hackathon Jam 2026\r Barney and Friends",
-  "main": "index.js",
+  "main": "server/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js"
+    "start": "node server/index.js"
   },
   "keywords": [],
   "author": "",
