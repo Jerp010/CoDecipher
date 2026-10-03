@@ -88,7 +88,7 @@
     "topic": "Modules",
     "question": "Import the math module.",
     "code_snippet": "___ ___",
-    "answers": ["import math"]
+    "answers": ["import", "math"]
   },
   {
     "id": 14,

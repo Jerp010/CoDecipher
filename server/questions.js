@@ -7,7 +7,7 @@ const SOLO_QUESTIONS_DIR = path.join(__dirname, '..', 'public', 'questions');
 
 // Co-op banks are loaded server-side only (kept out of the static dir so
 // their answers are not publicly downloadable).
-const COOP_QUESTIONS_DIR = path.join(__dirname, '..', 'public', 'questions-coop');
+const COOP_QUESTIONS_DIR = path.join(__dirname, '..', 'data', 'questions-coop');
 
 function pickRandom(items) {
   return items[Math.floor(Math.random() * items.length)];

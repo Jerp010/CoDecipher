@@ -11,7 +11,7 @@
     "topic": "Filtering",
     "question": "Show only users older than 18.",
     "code_snippet": "SELECT * FROM Users\n___ age ___ 18;",
-    "answers": ["WHERE", ">", "18"]
+    "answers": ["WHERE", ">"]
   },
   {
     "id": 3,
