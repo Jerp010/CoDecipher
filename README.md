@@ -1,164 +1,128 @@
-# CoDecipher - Unmask the Code
+# CoDecipher — Unmask the Code
 
-**CoDecipher** is an interactive multiplayer coding game where players decipher masked code segments, fill in the blanks, and compete to master programming concepts. Built for the Hackathon Jam 2026 by Barney and Friends.
+**CoDecipher** is a real-time multiplayer coding game: players fill in masked blanks (`___`) inside code snippets and race or team up to master programming concepts. Built for Hackathon Jam 2026 by *Barney and Friends*.
 
-## 🎮 Game Overview
+## Game modes
 
-CoDecipher is a real-time coding challenge game where players must fill in masked blanks within code snippets. The game features multiple gameplay modes:
+| Mode | What happens |
+|------|--------------|
+| **Solo** | Practice at your own pace: pick a topic, answer 10 fill-in-the-blank questions, track your score. |
+| **Battle** | Two players race head-to-head on the same question; fastest fully-correct submission wins the round. |
+| **Co-op** | Two players work on the same challenge simultaneously — each fills their own half (e.g. frontend + backend), and combined answers are scored. |
 
-- **Solo Mode** - Practice your coding skills at your own pace
-- **Battle Mode** - Compete head-to-head against another player
-- **Co-op Mode** - Team up with another player to solve challenges together
+**Topics:** C++, C#, Python, SQL, HTML/JS, OOP (solo) · HTML/PHP, JavaScript/React, Backend (co-op).
 
-### Supported Topics
+## Quickstart
 
-The game includes questions across multiple programming topics:
-
-| Category | Description |
-|----------|-------------|
-| C++ | C++ programming fundamentals |
-| C# | C# and .NET concepts |
-| Python | Python programming |
-| SQL | Database and SQL queries |
-| HTML/JS | Web development (HTML, JavaScript) |
-| OOP | Object-Oriented Programming concepts |
-| HTML/PHP | Server-side web development |
-| JavaScript/React | React.js framework |
-| Backend | Backend development concepts |
-
-## 🚀 How to Run
-
-### Prerequisites
-
-- [Node.js](https://nodejs.org/) (v14 or higher)
-- npm (comes with Node.js)
-
-### Installation
-
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/mimirasol/CoDecipher.git
-   cd CoDecipher
-   ```
-
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
-
-### Running Locally
-
-Start the server:
+Prerequisites: **Node.js ≥ 20** and npm.
 
 ```bash
+git clone https://github.com/mimirasol/CoDecipher.git
+cd CoDecipher
+npm install
+cp .env.example .env   # optional - see Environment variables below
 npm start
-# or
-node server.js
 ```
 
-The server will start on **http://localhost:3000**
+Open **http://localhost:3000** — that's the whole local setup.
 
-Open your browser and navigate to:
-```
-http://localhost:3000
-```
+Common commands:
 
-### Running with ngrok (For Online Multiplayer)
+| Command | What it does |
+|---------|--------------|
+| `npm start` | Start the server on `PORT` (default 3000). |
+| `npm run dev` | Same, with automatic restart on file changes (nodemon). |
+| `npm run validate` | Validate all question banks (schema + mask/answer consistency). |
+| `npm test` | Runs the validator (placeholder until a test suite is added). |
 
-The server automatically creates an ngrok tunnel when started, allowing you to play with friends online:
+## Environment variables
 
-#### Option 1: Using ngrok CLI (Recommended)
+Configuration comes from the process environment or a `.env` file in the project root (see `.env.example`). Everything is optional.
 
-1. Sign up at [ngrok.com](https://dashboard.ngrok.com/signup)
-2. Get your authtoken from the [ngrok dashboard](https://dashboard.ngrok.com/get-started/your-authtoken)
-3. Configure ngrok (run in Command Prompt or PowerShell):
-   ```cmd
-   ngrok config add-authtoken YOUR_AUTH_TOKEN
+| Variable | Default | Purpose |
+|----------|---------|---------|
+| `PORT` | `3000` | HTTP + WebSocket port. |
+| `NGROK_AUTHTOKEN` | *(unset)* | ngrok authtoken. When set, an online-play tunnel is created at startup. |
+| `NGROK_ENABLED` | `true` | Set to `false` to force local-only mode even when a token is present. |
+
+**ngrok is opt-in.** Without a token the server simply runs locally and prints a hint — no errors.
+
+## Online multiplayer with ngrok
+
+1. Sign up at [ngrok.com](https://dashboard.ngrok.com/signup) (free).
+2. Copy your authtoken from the [ngrok dashboard](https://dashboard.ngrok.com/get-started/your-authtoken).
+3. Put it in your `.env`:
    ```
-4. Start the server:
-   ```bash
-   npm start
+   NGROK_AUTHTOKEN=your_token_here
    ```
+4. `npm start` — the console prints a public `https://...ngrok...` URL. Share it; friends open it and pick a multiplayer mode.
 
-#### Option 2: Using Environment Variable (Windows)
+Notes: free-tier ngrok URLs change every run, and the tunnel exists only while the server runs.
 
-1. Set the environment variable in Command Prompt:
-   ```cmd
-   set NGROK_AUTHTOKEN=YOUR_AUTH_TOKEN
-   ```
-   Or in PowerShell:
-   ```powershell
-   $env:NGROK_AUTHTOKEN="YOUR_AUTH_TOKEN"
-   ```
-2. Start the server:
-   ```bash
-   npm start
-   ```
-
-#### Expected Output
-
-The server will display the ngrok URL in the console:
-```
-🚀 Hackathon Server Started!
-📍 Local URL: http://localhost:3000
-
-🌐 Creating ngrok tunnel...
-✅ Ngrok tunnel created: https://your-ngrok-url.ngrok.io
-```
-
-Share the ngrok URL with your friends to play together!
-
-## 📁 Project Structure
+## Project structure
 
 ```
 CoDecipher/
-├── server.js              # Main server (Express + WebSocket)
-├── package.json           # Dependencies
-├── public/
-│   ├── index.html         # Landing page
-│   ├── menu.html          # Game mode selection
-│   ├── solo.html          # Solo mode game
-│   ├── multiplayer-battle.html    # Battle mode
-│   ├── multiplayer-coop.html      # Co-op mode
-│   ├── solo-client.js     # Solo mode client
-│   ├── multiplayer-client-battle.js   # Battle client
-│   ├── multiplayer-client-coop.js     # Co-op client
-│   ├── questions/         # Solo questions
-│   └── questions-coop/   # Co-op questions
-└── utils/
-    ├── client.js          # Shared utilities
-    └── start.js           # Startup utilities
+├── server/                 # Node backend (Express + ws), CommonJS
+│   ├── index.js            # Entry point: config → static → WebSocket → listen
+│   ├── config.js           # .env loading + env var parsing
+│   ├── ws.js               # WebSocket server + message router
+│   ├── rooms.js            # Room-id generation + disconnect cleanup registry
+│   ├── battle.js           # Battle mode handlers
+│   ├── coop.js             # Co-op mode handlers (incl. scoring)
+│   ├── questions.js        # Question-bank loading (battle + co-op)
+│   └── ngrok.js            # Optional tunnel startup
+├── data/
+│   └── questions-coop/     # Co-op question banks (server-loaded, not public)
+├── public/                 # Everything the browser loads (URLs unchanged)
+│   ├── index.html          # Landing page
+│   ├── menu.html           # Mode selection
+│   ├── solo.html           # Solo mode page
+│   ├── multiplayer-battle.html
+│   ├── multiplayer-coop.html
+│   ├── solo-client.js      # Solo mode client logic
+│   ├── multiplayer-client-battle.js
+│   ├── multiplayer-client-coop.js
+│   └── questions/          # Solo question banks (fetched by the browser)
+├── scripts/
+│   └── validate-questions.js  # CI guardrail for question banks
+├── .github/workflows/ci.yml   # Validate + boot smoke test
+├── ARCHITECTURE.md         # How everything fits together - read this next
+└── .env.example            # Template for local configuration
 ```
 
-## 🔧 Technology Stack
+## Adding questions
 
-- **Backend**: Node.js, Express.js
-- **Real-time**: WebSocket (ws)
-- **Tunneling**: ngrok
-- **Frontend**: HTML, CSS, JavaScript
+- **Solo topics** live in `public/questions/<topic>.json` (also reused by battle mode).
+- **Co-op banks** live in `data/questions-coop/<file>.json` (server-loaded only, so their answers are not publicly downloadable).
 
-## 🎯 How to Play
+Each solo question looks like:
 
-### Solo Mode
-1. Select a topic category
-2. Answer coding questions by filling in the blanks
-3. Complete as many questions as you can
+```json
+{
+  "id": 1,
+  "topic": "Loops",
+  "question": "Print numbers 0 to 4 using a for-loop.",
+  "code_snippet": "for ___ in ___(___):\n    print(___)",
+  "answers": ["i", "range", "5", "i"]
+}
+```
 
-### Battle Mode
-1. Two players compete in real-time
-2. Players take turns selecting topics
-3. First to answer correctly wins the round
-4. Most correct answers wins the match
+The number of `___` masks **must equal** the number of answers (mask order = answer order). Co-op banks have their own per-player schema — see [ARCHITECTURE.md](ARCHITECTURE.md#data-formats).
 
-### Co-op Mode
-1. Two players work together
-2. Both players must fill in their blanks correctly
-3. Complete challenges before time runs out
+After editing any bank, run `npm run validate` — CI runs the same check on every pull request.
 
-## 📝 License
+## Tech stack
 
-ISC License
+- **Backend:** Node.js (CommonJS), Express 5, `ws` (WebSocket)
+- **Frontend:** vanilla HTML/CSS/JS, no build step
+- **Tunneling:** `@ngrok/ngrok` (opt-in)
+- **Config:** `dotenv`
 
----
+## Contributing
 
-Built with ❤️ for Hackathon Jam 2026
+Start with [ARCHITECTURE.md](ARCHITECTURE.md) for the module map, WebSocket protocol reference, and known limitations. Keep the WebSocket message protocol backward-compatible, and run `npm run validate` before submitting question changes.
+
+## License
+
+[MIT](LICENSE) — originally built by *Barney and Friends* for Hackathon Jam 2026.
